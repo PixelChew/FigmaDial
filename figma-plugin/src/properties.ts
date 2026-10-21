@@ -486,6 +486,25 @@ const paragraph: Adapter = {
 	},
 };
 
+let nudgeAxis: "X" | "Y" = "X";
+
+/** Moves the selection; the value shown is the layer's position on that axis. */
+const nudge: Adapter = {
+	supports: (node) => has(node, "x") && has(node, "y"),
+	get: (node) => Math.round((nudgeAxis === "X" ? node.x : node.y) * 100) / 100,
+	set: (node, value) => {
+		if (nudgeAxis === "X") node.x = value;
+		else node.y = value;
+	},
+	modes: {
+		order: ["X", "Y"],
+		get: () => nudgeAxis,
+		set: (_node, mode) => {
+			nudgeAxis = mode as typeof nudgeAxis;
+		},
+	},
+};
+
 export const ADAPTERS: Record<PropertyId, Adapter> = {
 	opacity,
 	layerBlur,
@@ -504,6 +523,7 @@ export const ADAPTERS: Record<PropertyId, Adapter> = {
 	lineHeight,
 	letterSpacing,
 	paragraph,
+	nudge,
 };
 
 /**

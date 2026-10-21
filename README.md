@@ -4,7 +4,7 @@ Control Figma from the Stream Deck+ dials and keys (macOS).
 
 | Action | Where | What it does |
 | --- | --- | --- |
-| **Property dial** | Dial | **Turn** to change one of 17 effects on the selection (opacity, fill, rotation, size, blur, drop/inner shadow, radius, smoothing, stroke, dashes, gap, padding, font size, line height, letter spacing, paragraph spacing) (spin fast for bigger steps). **Click** to cycle that property's mode (see below). **Hold, or hold and turn,** to open the quick select menu on the touch strip; turn to choose, release to pick. Choose which effects each dial's menu lists under *Quick select* in its settings (nothing ticked gives the first ten). **Tap the strip** to reset. Turning blur, shadows, stroke, dashes or fill up on a layer without one adds it; turning it to 0 removes it. The strip shows the live value and mode, and one turn is one undo step. |
+| **Property dial** | Dial | **Turn** to change one of 18 effects on the selection (nudge, opacity, fill, rotation, size, blur, drop/inner shadow, radius, smoothing, stroke, dashes, gap, padding, font size, line height, letter spacing, paragraph spacing) (spin fast for bigger steps). **Click** to cycle that property's mode (see below). **Hold, or hold and turn,** to open the quick select menu on the touch strip; turn to choose, release to pick. Choose which effects each dial's menu lists under *Quick select* in its settings (nothing ticked gives the first ten). **Tap the strip** to reset. Turning blur, shadows, stroke, dashes or fill up on a layer without one adds it; turning it to 0 removes it. The strip shows the live value and mode, and one turn is one undo step. |
 | **Focused field** | Dial | Nudges whichever number field has focus in Figma's properties panel (it sends ↑/↓, hold to send Shift+↑/↓ for ×10). Press to Tab to the next field, tap the strip to leave the field. Works on any field, without the Figma plugin, but can't show the value. |
 | **Figma shortcut** | Key | Fires a Figma shortcut: paste in place, paste to replace, copy/paste properties, frame selection, auto layout, group, component, run last plugin, and more. |
 
@@ -28,8 +28,9 @@ Control Figma from the Stream Deck+ dials and keys (macOS).
 | Line height | px → % → Auto |
 | Letter spacing | px ↔ % |
 | Paragraph | Spacing ↔ Indent |
+| Nudge | Axis: X ↔ Y (moves each selected layer by 1 px per tick, 10 px when spun fast) |
 
-Tapping the strip resets the value, except for Size, Font size and Line height, where there's no sensible default.
+Tapping the strip resets the value, except for Size, Font size, Line height and Nudge, where there's no sensible default.
 
 ## How it fits together
 

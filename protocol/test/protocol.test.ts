@@ -108,6 +108,7 @@ describe("display helpers", () => {
 		expect(indicatorPercent("mixed", opacity)).toBe(0);
 		expect(indicatorPercent(500, PROPERTIES.layerBlur)).toBe(100);
 		expect(indicatorPercent(0, PROPERTIES.rotation)).toBe(50);
+		expect(indicatorPercent(120, PROPERTIES.nudge)).toBe(0);
 	});
 });
 

@@ -91,6 +91,16 @@ async function handle(msg: ToFigma): Promise<void> {
 	} else if (msg.type === "mode") {
 		await cycleMode(msg.property, nodes);
 		figma.commitUndo();
+	} else if (info.relative) {
+		const adapter = ADAPTERS[msg.property];
+		const delta = (adapter.invert ? -msg.ticks : msg.ticks) * (adapter.step?.() ?? (msg.fast ? info.fastStep : info.step));
+		await Promise.all(
+			nodes.map(async (node) => {
+				const value = adapter.get(node);
+				if (typeof value === "number") await adapter.set(node, value + delta);
+			}),
+		);
+		scheduleUndoCommit();
 	} else {
 		// A mixed selection snaps to the first layer's value, then steps.
 		const fallback = firstNumber(msg.property, nodes, info.reset ?? info.min);

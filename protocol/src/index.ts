@@ -32,7 +32,8 @@ export type PropertyId =
 	| "dashes"
 	| "lineHeight"
 	| "letterSpacing"
-	| "paragraph";
+	| "paragraph"
+	| "nudge";
 
 export interface PropertyInfo {
 	id: PropertyId;
@@ -49,6 +50,8 @@ export interface PropertyInfo {
 	max: number;
 	/** Value a tap on the touch strip resets to; none means tapping does nothing. */
 	reset?: number;
+	/** Each layer moves by the delta from its own value instead of all snapping to one value (nudging a multi-selection keeps their spacing). */
+	relative?: boolean;
 }
 
 export const PROPERTIES: Record<PropertyId, PropertyInfo> = {
@@ -69,6 +72,7 @@ export const PROPERTIES: Record<PropertyId, PropertyInfo> = {
 	lineHeight: { id: "lineHeight", label: "Line", unit: "", step: 1, fastStep: 5, min: 0, max: 400 },
 	letterSpacing: { id: "letterSpacing", label: "Letter", unit: "", step: 0.5, fastStep: 2, min: -50, max: 100, reset: 0 },
 	paragraph: { id: "paragraph", label: "Paragraph", unit: "px", step: 1, fastStep: 4, min: 0, max: 400, reset: 0 },
+	nudge: { id: "nudge", label: "Nudge", unit: "px", step: 1, fastStep: 10, min: -100000, max: 100000, relative: true },
 };
 
 export const PROPERTY_ORDER: PropertyId[] = [
@@ -89,6 +93,7 @@ export const PROPERTY_ORDER: PropertyId[] = [
 	"lineHeight",
 	"letterSpacing",
 	"paragraph",
+	"nudge",
 ];
 
 /** What the hold menu lists until a dial's settings say otherwise. */
@@ -246,6 +251,8 @@ export function formatValue(value: PropertyValue | undefined, info: PropertyInfo
 /** Touch strip bar fill, 0–100. */
 export function indicatorPercent(value: PropertyValue | undefined, info: PropertyInfo): number {
 	if (typeof value !== "number") return 0;
+	// A position has no meaningful range to fill a bar with.
+	if (info.relative) return 0;
 	return Math.round(((clamp(value, info.min, info.max) - info.min) / (info.max - info.min)) * 100);
 }
 
