@@ -6,6 +6,7 @@ import {
 	stepValue,
 	UNDO_IDLE_MS,
 	type PropertyId,
+	type SelectionKind,
 	type StateMessage,
 	type ToFigma,
 } from "@figmadeck/protocol";
@@ -30,6 +31,38 @@ function selection(): readonly SceneNode[] {
 	return figma.currentPage.selection;
 }
 
+function kindOf(node: SceneNode): SelectionKind {
+	switch (node.type) {
+		case "TEXT":
+			return "text";
+		case "FRAME":
+		case "COMPONENT":
+		case "COMPONENT_SET":
+		case "INSTANCE":
+			return node.layoutMode === "NONE" ? "frame" : "autoLayout";
+		case "RECTANGLE":
+		case "ELLIPSE":
+		case "POLYGON":
+		case "STAR":
+		case "BOOLEAN_OPERATION":
+			return "shape";
+		case "LINE":
+		case "VECTOR":
+			return "line";
+		case "GROUP":
+		case "SECTION":
+			return "group";
+		default:
+			return "mixed";
+	}
+}
+
+function selectionKind(nodes: readonly SceneNode[]): SelectionKind {
+	if (nodes.length === 0) return "none";
+	const first = kindOf(nodes[0]);
+	return nodes.every((node) => kindOf(node) === first) ? first : "mixed";
+}
+
 function sendState(): void {
 	const nodes = selection();
 	const values: StateMessage["values"] = {};
@@ -40,7 +73,7 @@ function sendState(): void {
 		const mode = aggregateMode(id, nodes);
 		if (mode !== undefined) modes[id] = mode;
 	}
-	const state: StateMessage = { type: "state", fileName: figma.root.name, selectionCount: nodes.length, values, modes };
+	const state: StateMessage = { type: "state", fileName: figma.root.name, selectionCount: nodes.length, kind: selectionKind(nodes), values, modes };
 	toUi({ kind: "send", data: JSON.stringify(state) });
 }
 

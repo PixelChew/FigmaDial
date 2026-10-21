@@ -99,6 +99,21 @@ export const PROPERTY_ORDER: PropertyId[] = [
 /** What the hold menu lists until a dial's settings say otherwise. */
 export const DEFAULT_MENU: PropertyId[] = PROPERTY_ORDER.slice(0, 10);
 
+/** What kind of layer is selected, so a dial can jump to the effect that matters most for it. */
+export type SelectionKind = "none" | "mixed" | "text" | "autoLayout" | "frame" | "shape" | "line" | "group";
+
+const SELECTION_KINDS: readonly SelectionKind[] = ["none", "mixed", "text", "autoLayout", "frame", "shape", "line", "group"];
+
+/** The effect a dial with auto-switch turns to for each kind of selection. */
+export const AUTO_PROPERTY: Partial<Record<SelectionKind, PropertyId>> = {
+	text: "fontSize",
+	autoLayout: "itemSpacing",
+	frame: "cornerRadius",
+	shape: "cornerRadius",
+	line: "strokeWeight",
+	group: "opacity",
+};
+
 export function isPropertyId(value: unknown): value is PropertyId {
 	return typeof value === "string" && value in PROPERTIES;
 }
@@ -140,6 +155,8 @@ export interface StateMessage {
 	/** Name of the Figma file, so it's obvious which window the dials are driving. */
 	fileName: string;
 	selectionCount: number;
+	/** What kind of layer is selected; "mixed" when the selected layers differ. */
+	kind: SelectionKind;
 	/** Only properties every selected layer supports are present. */
 	values: Partial<Record<PropertyId, PropertyValue>>;
 	/** Each supported property's current mode label, or "Mixed". */
@@ -174,7 +191,8 @@ export function parseToStreamDeck(raw: string): ToStreamDeck | undefined {
 			if (isPropertyId(key) && typeof value === "string") modes[key] = value;
 		}
 	}
-	return { type: "state", fileName: typeof msg.fileName === "string" ? msg.fileName : "", selectionCount: msg.selectionCount, values, modes };
+	const kind = SELECTION_KINDS.includes(msg.kind as SelectionKind) ? (msg.kind as SelectionKind) : "mixed";
+	return { type: "state", fileName: typeof msg.fileName === "string" ? msg.fileName : "", selectionCount: msg.selectionCount, kind, values, modes };
 }
 
 function safeParse(raw: string): Record<string, unknown> | undefined {

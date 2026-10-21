@@ -84,9 +84,15 @@ describe("parsing", () => {
 			type: "state",
 			fileName: "File",
 			selectionCount: 2,
+			kind: "mixed",
 			values: { opacity: "mixed" },
 			modes: { strokeWeight: "Inside" },
 		});
+	});
+
+	it("keeps a known selection kind", () => {
+		const raw = JSON.stringify({ type: "state", fileName: "", selectionCount: 1, kind: "text", values: {}, modes: {} });
+		expect(parseToStreamDeck(raw)?.kind).toBe("text");
 	});
 
 	it("accepts mode messages", () => {

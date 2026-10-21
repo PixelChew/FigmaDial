@@ -30,6 +30,10 @@ Control Figma from the Stream Deck+ dials and keys (macOS).
 | Paragraph | Spacing ↔ Indent |
 | Nudge | Axis: X ↔ Y (moves each selected layer by 1 px per tick, 10 px when spun fast) |
 
+### Auto-switch
+
+When you select a different kind of layer, the Property dial jumps to the effect that matters most for it: text → Font size, auto layout → Gap, frame or shape → Radius, line or vector → Stroke, group → Opacity. It only jumps when the kind changes, so if you pick something else from the menu it stays put while you click between layers of the same kind. It also only jumps to effects in that dial's Quick select list, so two dials with different lists won't both land on the same effect. Turn it off per dial with *Auto-switch* in the dial's settings.
+
 Tapping the strip resets the value, except for Size, Font size, Line height and Nudge, where there's no sensible default.
 
 ## How it fits together

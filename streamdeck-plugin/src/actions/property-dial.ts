@@ -14,6 +14,7 @@ import streamDeck, {
 import {
 	FAST_TICKS,
 	formatValue,
+	AUTO_PROPERTY,
 	DEFAULT_MENU,
 	HOLD_MS,
 	indicatorPercent,
@@ -23,6 +24,7 @@ import {
 	TickCoalescer,
 	wrapIndex,
 	type PropertyId,
+	type SelectionKind,
 	type StateMessage,
 } from "@figmadeck/protocol";
 
@@ -33,6 +35,8 @@ type Settings = {
 	current?: PropertyId;
 	/** Effects listed in this dial's hold menu ("quick select"). Empty or missing means DEFAULT_MENU. */
 	menu?: PropertyId[];
+	/** Jump to the most relevant effect when the kind of selection changes (text → Font size, shape → Radius…). On unless false. */
+	auto?: boolean;
 };
 
 type DialState = {
@@ -43,6 +47,8 @@ type DialState = {
 	holdTimer: ReturnType<typeof setTimeout> | undefined;
 	/** Index into the dial's menu while it's open; undefined when it's closed. */
 	menuIndex: number | undefined;
+	/** Selection kind the dial last saw, so it only auto-switches when that changes and a manual pick sticks. */
+	kind: SelectionKind | undefined;
 };
 
 /**
@@ -60,7 +66,10 @@ export class PropertyDial extends SingletonAction<Settings> {
 	constructor() {
 		super();
 		bridge.onState((state) => {
-			for (const dial of this.dials.values()) void this.render(dial, state);
+			for (const dial of this.dials.values()) {
+				if (state) this.autoSwitch(dial, state);
+				void this.render(dial, state);
+			}
 		});
 	}
 
@@ -74,6 +83,7 @@ export class PropertyDial extends SingletonAction<Settings> {
 			}),
 			holdTimer: undefined,
 			menuIndex: undefined,
+			kind: bridge.state?.kind,
 		};
 		this.dials.set(ev.action.id, dial);
 		await this.render(dial, bridge.state);
@@ -139,6 +149,18 @@ export class PropertyDial extends SingletonAction<Settings> {
 	override onTouchTap(ev: TouchTapEvent<Settings>): void {
 		const dial = this.dials.get(ev.action.id);
 		if (dial) bridge.send({ type: "reset", property: current(dial.settings) });
+	}
+
+	private autoSwitch(dial: DialState, state: StateMessage): void {
+		if (state.kind === dial.kind) return;
+		dial.kind = state.kind;
+		if (dial.settings.auto === false || dial.menuIndex !== undefined) return;
+		const target = AUTO_PROPERTY[state.kind];
+		// Only jump to effects this dial lists, so two dials with different menus don't both land on the same one.
+		if (!target || target === current(dial.settings) || !menu(dial.settings).includes(target)) return;
+		dial.coalescer.cancel();
+		dial.settings = { ...dial.settings, current: target };
+		void dial.action.setSettings(dial.settings);
 	}
 
 	private openMenu(dial: DialState): void {
