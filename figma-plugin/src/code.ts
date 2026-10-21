@@ -12,7 +12,7 @@ import {
 } from "@figmadeck/protocol";
 
 import type { CodeToUi, UiToCode } from "./messages";
-import { ADAPTERS, aggregate, aggregateMode, cycleMode, firstNumber } from "./properties";
+import { ADAPTERS, aggregate, aggregateMode, cornerRadiusMax, cycleMode, firstNumber } from "./properties";
 
 // A small status window, so it's obvious the plugin is running and whether it reached the Stream Deck.
 figma.showUI(__html__, { width: 240, height: 56, title: "FigmaDeck", themeColors: true });
@@ -73,7 +73,9 @@ function sendState(): void {
 		const mode = aggregateMode(id, nodes);
 		if (mode !== undefined) modes[id] = mode;
 	}
-	const state: StateMessage = { type: "state", fileName: figma.root.name, selectionCount: nodes.length, kind: selectionKind(nodes), values, modes };
+	const barMax: StateMessage["barMax"] = {};
+	if (values.cornerRadius !== undefined) barMax.cornerRadius = cornerRadiusMax(nodes);
+	const state: StateMessage = { type: "state", fileName: figma.root.name, selectionCount: nodes.length, kind: selectionKind(nodes), values, modes, barMax };
 	toUi({ kind: "send", data: JSON.stringify(state) });
 }
 

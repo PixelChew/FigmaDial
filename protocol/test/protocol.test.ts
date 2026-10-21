@@ -79,6 +79,7 @@ describe("parsing", () => {
 			selectionCount: 2,
 			values: { opacity: "mixed", bogus: 1, layerBlur: "x" },
 			modes: { strokeWeight: "Inside", bogus: "x", opacity: 3 },
+			barMax: { cornerRadius: 50, bogus: 1, opacity: "x" },
 		});
 		expect(parseToStreamDeck(raw)).toEqual({
 			type: "state",
@@ -87,6 +88,7 @@ describe("parsing", () => {
 			kind: "mixed",
 			values: { opacity: "mixed" },
 			modes: { strokeWeight: "Inside" },
+			barMax: { cornerRadius: 50 },
 		});
 	});
 
@@ -111,10 +113,20 @@ describe("display helpers", () => {
 
 	it("computes the bar fill", () => {
 		expect(indicatorPercent(50, opacity)).toBe(50);
-		expect(indicatorPercent("mixed", opacity)).toBe(0);
-		expect(indicatorPercent(500, PROPERTIES.layerBlur)).toBe(100);
+		expect(indicatorPercent("mixed", opacity)).toBeUndefined();
 		expect(indicatorPercent(0, PROPERTIES.rotation)).toBe(50);
-		expect(indicatorPercent(120, PROPERTIES.nudge)).toBe(0);
+	});
+
+	it("only shows a bar for effects with a natural range", () => {
+		expect(indicatorPercent(24, PROPERTIES.fontSize)).toBeUndefined();
+		expect(indicatorPercent(10, PROPERTIES.layerBlur)).toBeUndefined();
+		expect(indicatorPercent(120, PROPERTIES.nudge)).toBeUndefined();
+	});
+
+	it("fills the radius bar up to the shape's pill point", () => {
+		expect(indicatorPercent(25, PROPERTIES.cornerRadius, 50)).toBe(50);
+		expect(indicatorPercent(80, PROPERTIES.cornerRadius, 50)).toBe(100);
+		expect(indicatorPercent(25, PROPERTIES.cornerRadius)).toBeUndefined();
 	});
 });
 

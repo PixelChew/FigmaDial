@@ -541,6 +541,11 @@ export function aggregate(id: PropertyId, nodes: readonly SceneNode[]): Property
 	return first;
 }
 
+/** Radius at which every selected layer is fully rounded (a circle or pill): half its shorter side. */
+export function cornerRadiusMax(nodes: readonly SceneNode[]): number {
+	return Math.max(0, ...nodes.map((n) => (has(n, "width") ? Math.min((n as LayoutMixin & SceneNode).width, (n as LayoutMixin & SceneNode).height) / 2 : 0)));
+}
+
 /** The first number found across the nodes, used as the starting point when stepping a mixed value. */
 export function firstNumber(id: PropertyId, nodes: readonly SceneNode[], otherwise: number): number {
 	for (const node of nodes) {

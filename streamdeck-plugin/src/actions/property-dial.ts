@@ -191,8 +191,9 @@ function valueFeedback(dial: DialState, state: StateMessage | undefined): Feedba
 	else if (value === undefined) text = "n/a";
 	else text = formatValue(value, info);
 
-	// Hide the bar when there's no number to show, otherwise an empty track reads like a value.
-	const indicator = typeof value === "number" && bridge.connected ? { value: indicatorPercent(value, info), enabled: true } : { enabled: false };
+	// Hide the bar when there's no number or no natural range, otherwise an empty track reads like a value.
+	const percent = bridge.connected ? indicatorPercent(value, info, state?.barMax?.[info.id]) : undefined;
+	const indicator = percent === undefined ? { enabled: false } : { value: percent, enabled: true };
 	return { title: mode && value !== undefined ? `${info.label} · ${mode}` : info.label, value: text, indicator };
 }
 

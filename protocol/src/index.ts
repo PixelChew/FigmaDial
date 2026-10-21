@@ -46,8 +46,14 @@ export interface PropertyInfo {
 	/** Change per tick when the dial is turned fast or held down while turning. */
 	fastStep: number;
 	min: number;
-	/** Upper bound for the value, and for the touch strip bar. */
+	/** Upper bound for the value. */
 	max: number;
+	/**
+	 * Whether the touch strip shows a fill bar. Only effects with a natural range get one: a bar on font size or gap
+	 * would just show how far the value is from an arbitrary cap. "selection" means the range comes from the layer
+	 * itself (radius fills up as the shape becomes a pill or circle) and Figma reports it in `StateMessage.barMax`.
+	 */
+	bar?: "range" | "selection";
 	/** Value a tap on the touch strip resets to; none means tapping does nothing. */
 	reset?: number;
 	/** Each layer moves by the delta from its own value instead of all snapping to one value (nudging a multi-selection keeps their spacing). */
@@ -55,19 +61,19 @@ export interface PropertyInfo {
 }
 
 export const PROPERTIES: Record<PropertyId, PropertyInfo> = {
-	opacity: { id: "opacity", label: "Opacity", unit: "%", step: 1, fastStep: 5, min: 0, max: 100, reset: 100 },
+	opacity: { id: "opacity", label: "Opacity", unit: "%", step: 1, fastStep: 5, min: 0, max: 100, reset: 100, bar: "range" },
 	layerBlur: { id: "layerBlur", label: "Blur", unit: "px", step: 1, fastStep: 5, min: 0, max: 250, reset: 0 },
-	cornerRadius: { id: "cornerRadius", label: "Radius", unit: "px", step: 1, fastStep: 8, min: 0, max: 200, reset: 0 },
+	cornerRadius: { id: "cornerRadius", label: "Radius", unit: "px", step: 1, fastStep: 8, min: 0, max: 200, reset: 0, bar: "selection" },
 	strokeWeight: { id: "strokeWeight", label: "Stroke", unit: "px", step: 1, fastStep: 4, min: 0, max: 100, reset: 1 },
 	itemSpacing: { id: "itemSpacing", label: "Gap", unit: "px", step: 1, fastStep: 8, min: 0, max: 400, reset: 0 },
 	shadow: { id: "shadow", label: "Shadow", unit: "px", step: 1, fastStep: 4, min: -100, max: 100, reset: 0 },
 	padding: { id: "padding", label: "Padding", unit: "px", step: 1, fastStep: 8, min: 0, max: 400, reset: 0 },
-	rotation: { id: "rotation", label: "Rotate", unit: "°", step: 1, fastStep: 15, min: -180, max: 180, reset: 0 },
+	rotation: { id: "rotation", label: "Rotate", unit: "°", step: 1, fastStep: 15, min: -180, max: 180, reset: 0, bar: "range" },
 	size: { id: "size", label: "Size", unit: "px", step: 1, fastStep: 10, min: 1, max: 4000 },
 	fontSize: { id: "fontSize", label: "Font", unit: "px", step: 1, fastStep: 4, min: 1, max: 400 },
 	innerShadow: { id: "innerShadow", label: "Inner", unit: "px", step: 1, fastStep: 4, min: -100, max: 100, reset: 0 },
-	fillOpacity: { id: "fillOpacity", label: "Fill", unit: "%", step: 1, fastStep: 5, min: 0, max: 100, reset: 100 },
-	smoothing: { id: "smoothing", label: "Smooth", unit: "%", step: 1, fastStep: 10, min: 0, max: 100, reset: 0 },
+	fillOpacity: { id: "fillOpacity", label: "Fill", unit: "%", step: 1, fastStep: 5, min: 0, max: 100, reset: 100, bar: "range" },
+	smoothing: { id: "smoothing", label: "Smooth", unit: "%", step: 1, fastStep: 10, min: 0, max: 100, reset: 0, bar: "range" },
 	dashes: { id: "dashes", label: "Dashes", unit: "px", step: 1, fastStep: 4, min: 0, max: 100, reset: 0 },
 	lineHeight: { id: "lineHeight", label: "Line", unit: "", step: 1, fastStep: 5, min: 0, max: 400 },
 	letterSpacing: { id: "letterSpacing", label: "Letter", unit: "", step: 0.5, fastStep: 2, min: -50, max: 100, reset: 0 },
@@ -161,6 +167,8 @@ export interface StateMessage {
 	values: Partial<Record<PropertyId, PropertyValue>>;
 	/** Each supported property's current mode label, or "Mixed". */
 	modes: Partial<Record<PropertyId, string>>;
+	/** Upper end of the bar for effects whose range depends on the layer, e.g. radius is full at half the shorter side. */
+	barMax?: Partial<Record<PropertyId, number>>;
 }
 
 export type ToStreamDeck = StateMessage;
@@ -191,8 +199,14 @@ export function parseToStreamDeck(raw: string): ToStreamDeck | undefined {
 			if (isPropertyId(key) && typeof value === "string") modes[key] = value;
 		}
 	}
+	const barMax: NonNullable<StateMessage["barMax"]> = {};
+	if (typeof msg.barMax === "object" && msg.barMax !== null) {
+		for (const [key, value] of Object.entries(msg.barMax as Record<string, unknown>)) {
+			if (isPropertyId(key) && typeof value === "number" && value > 0) barMax[key] = value;
+		}
+	}
 	const kind = SELECTION_KINDS.includes(msg.kind as SelectionKind) ? (msg.kind as SelectionKind) : "mixed";
-	return { type: "state", fileName: typeof msg.fileName === "string" ? msg.fileName : "", selectionCount: msg.selectionCount, kind, values, modes };
+	return { type: "state", fileName: typeof msg.fileName === "string" ? msg.fileName : "", selectionCount: msg.selectionCount, kind, values, modes, barMax };
 }
 
 function safeParse(raw: string): Record<string, unknown> | undefined {
@@ -266,12 +280,12 @@ export function formatValue(value: PropertyValue | undefined, info: PropertyInfo
 	return `${round2(value)}${info.unit === "px" ? " px" : info.unit}`;
 }
 
-/** Touch strip bar fill, 0–100. */
-export function indicatorPercent(value: PropertyValue | undefined, info: PropertyInfo): number {
-	if (typeof value !== "number") return 0;
-	// A position has no meaningful range to fill a bar with.
-	if (info.relative) return 0;
-	return Math.round(((clamp(value, info.min, info.max) - info.min) / (info.max - info.min)) * 100);
+/** Touch strip bar fill, 0–100, or undefined when the effect has no bar or its range isn't known. */
+export function indicatorPercent(value: PropertyValue | undefined, info: PropertyInfo, barMax?: number): number | undefined {
+	if (typeof value !== "number" || !info.bar) return undefined;
+	const max = info.bar === "selection" ? barMax : info.max;
+	if (max === undefined || max <= info.min) return undefined;
+	return Math.round(((clamp(value, info.min, max) - info.min) / (max - info.min)) * 100);
 }
 
 /**
