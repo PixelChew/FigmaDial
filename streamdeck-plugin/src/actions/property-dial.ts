@@ -37,6 +37,9 @@ type Settings = {
 	menu?: PropertyId[];
 	/** Jump to the most relevant effect when the kind of selection changes (text → Font size, shape → Radius…). On unless false. */
 	auto?: boolean;
+} & {
+	/** Per-kind auto-switch target; "" turns switching off for that kind, missing uses AUTO_PROPERTY. */
+	[K in SelectionKind as `auto_${K}`]?: PropertyId | "";
 };
 
 type DialState = {
@@ -155,9 +158,9 @@ export class PropertyDial extends SingletonAction<Settings> {
 		if (state.kind === dial.kind) return;
 		dial.kind = state.kind;
 		if (dial.settings.auto === false || dial.menuIndex !== undefined) return;
-		const target = AUTO_PROPERTY[state.kind];
-		// Only jump to effects this dial lists, so two dials with different menus don't both land on the same one.
-		if (!target || target === current(dial.settings) || !menu(dial.settings).includes(target)) return;
+		const configured = dial.settings[`auto_${state.kind}`];
+		const target = configured === undefined ? AUTO_PROPERTY[state.kind] : configured;
+		if (!isPropertyId(target) || target === current(dial.settings)) return;
 		dial.coalescer.cancel();
 		dial.settings = { ...dial.settings, current: target };
 		void dial.action.setSettings(dial.settings);
