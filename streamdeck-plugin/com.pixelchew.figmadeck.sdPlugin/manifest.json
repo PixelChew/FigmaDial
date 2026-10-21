@@ -11,7 +11,7 @@
 			"PropertyInspectorPath": "ui/property-dial.html",
 			"Controllers": ["Encoder"],
 			"Encoder": {
-				"layout": "$B1",
+				"layout": "layouts/value.json",
 				"TriggerDescription": {
 					"Rotate": "Adjust value (hold for big steps)",
 					"Push": "Next property",
@@ -27,7 +27,7 @@
 			"Tooltip": "Nudges whichever number field has focus in Figma's properties panel.",
 			"Controllers": ["Encoder"],
 			"Encoder": {
-				"layout": "$B1",
+				"layout": "layouts/value.json",
 				"TriggerDescription": {
 					"Rotate": "Nudge focused field (hold for ×10)",
 					"Push": "Next field",

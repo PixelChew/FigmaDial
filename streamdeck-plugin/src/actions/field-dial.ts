@@ -30,7 +30,7 @@ export class FieldDial extends SingletonAction {
 				keys.send({ code: ticks > 0 ? KEY.up : KEY.down, modifiers: coarse ? ["shift"] : [], repeat: Math.abs(ticks) });
 			}),
 		);
-		await ev.action.setFeedback({ title: "Focused field", value: "Turn to nudge", indicator: { value: 0 } });
+		await ev.action.setFeedback({ title: "Focused field", value: "Nudge ↑↓", indicator: { value: 0 } });
 	}
 
 	override onWillDisappear(ev: WillDisappearEvent): void {
