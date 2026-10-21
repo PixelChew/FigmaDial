@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+	<head lang="en">
+		<title>Property dial settings</title>
+		<meta charset="utf-8" />
+		<script src="https://sdpi-components.dev/releases/v4/sdpi-components.js"></script>
+	</head>
+	<body>
+		<sdpi-item label="Properties">
+			<sdpi-checkbox-list setting="properties" columns="1">
+				<option value="opacity">Opacity</option>
+				<option value="layerBlur">Layer blur</option>
+				<option value="cornerRadius">Corner radius</option>
+				<option value="strokeWeight">Stroke weight</option>
+				<option value="itemSpacing">Auto layout gap</option>
+			</sdpi-checkbox-list>
+		</sdpi-item>
+		<sdpi-item>
+			<p>Pressing the dial cycles through the ticked properties that your selection supports. None ticked means all of them.</p>
+		</sdpi-item>
+	</body>
+</html>

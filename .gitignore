@@ -1,4 +1,4 @@
 node_modules/
-*.sdPlugin/bin
-*.sdPlugin/logs
+**/*.sdPlugin/bin
+**/*.sdPlugin/logs
 figma-plugin/dist
