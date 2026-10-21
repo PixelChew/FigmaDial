@@ -1,5 +1,5 @@
 import streamDeck from "@elgato/streamdeck";
-import { DEFAULT_PORT, parseToStreamDeck, type StateMessage, type ToFigma } from "@figma-dial/protocol";
+import { DEFAULT_PORT, parseToStreamDeck, type StateMessage, type ToFigma } from "@figmadeck/protocol";
 import { WebSocket, WebSocketServer } from "ws";
 
 const logger = streamDeck.logger.createScope("Bridge");

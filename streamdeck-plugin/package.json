@@ -1,11 +1,11 @@
 {
-	"name": "@figma-dial/streamdeck-plugin",
+	"name": "@figmadeck/streamdeck-plugin",
 	"version": "0.1.0",
 	"private": true,
 	"type": "module",
 	"scripts": {
 		"build": "rollup -c",
-		"watch": "rollup -c -w --watch.onEnd=\"streamdeck restart com.pixelchew.figma-dial\""
+		"watch": "rollup -c -w --watch.onEnd=\"streamdeck restart com.pixelchew.figmadeck\""
 	},
 	"devDependencies": {
 		"@elgato/cli": "^1.10.3",
@@ -21,7 +21,7 @@
 	},
 	"dependencies": {
 		"@elgato/streamdeck": "^3.0.3",
-		"@figma-dial/protocol": "*",
+		"@figmadeck/protocol": "*",
 		"ws": "^8.19.0"
 	}
 }

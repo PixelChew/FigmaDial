@@ -8,7 +8,7 @@ import {
 	WillAppearEvent,
 	WillDisappearEvent,
 } from "@elgato/streamdeck";
-import { TickCoalescer } from "@figma-dial/protocol";
+import { TickCoalescer } from "@figmadeck/protocol";
 
 import { KEY, keys } from "../keys";
 
@@ -17,7 +17,7 @@ import { KEY, keys } from "../keys";
  * Turn to nudge by 1, hold and turn to nudge by 10 (Shift), press to Tab to the next field, tap the strip to leave the field.
  * Works for any field Figma supports arrow keys in, without the Figma plugin running, but can't show the value.
  */
-@action({ UUID: "com.pixelchew.figma-dial.field" })
+@action({ UUID: "com.pixelchew.figmadeck.field" })
 export class FieldDial extends SingletonAction {
 	private readonly coalescers = new Map<string, TickCoalescer>();
 	private readonly turnedWhilePressed = new Set<string>();

@@ -21,7 +21,7 @@ import {
 	TickCoalescer,
 	type PropertyId,
 	type StateMessage,
-} from "@figma-dial/protocol";
+} from "@figmadeck/protocol";
 
 import { bridge } from "../bridge";
 
@@ -44,7 +44,7 @@ type DialState = {
  * Controls a Figma property on the current selection. Turn to change it, press to cycle to the next property
  * the selection supports, tap the touch strip to reset. Figma reports values back, so the strip is always live.
  */
-@action({ UUID: "com.pixelchew.figma-dial.property" })
+@action({ UUID: "com.pixelchew.figmadeck.property" })
 export class PropertyDial extends SingletonAction<Settings> {
 	private readonly dials = new Map<string, DialState>();
 

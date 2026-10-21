@@ -1,5 +1,5 @@
 {
-	"name": "@figma-dial/figma-plugin",
+	"name": "@figmadeck/figma-plugin",
 	"version": "0.1.0",
 	"private": true,
 	"type": "module",
@@ -12,6 +12,6 @@
 		"esbuild": "^0.25.0"
 	},
 	"dependencies": {
-		"@figma-dial/protocol": "*"
+		"@figmadeck/protocol": "*"
 	}
 }

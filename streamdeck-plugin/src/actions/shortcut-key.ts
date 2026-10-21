@@ -32,7 +32,7 @@ function shortcutFor(settings: Settings): (typeof SHORTCUTS)[ShortcutId] {
 }
 
 /** A key that fires one Figma shortcut, picked in the property inspector. Only fires while Figma is frontmost. */
-@action({ UUID: "com.pixelchew.figma-dial.shortcut" })
+@action({ UUID: "com.pixelchew.figmadeck.shortcut" })
 export class ShortcutKey extends SingletonAction<Settings> {
 	override async onWillAppear(ev: WillAppearEvent<Settings>): Promise<void> {
 		if (ev.action.isKey()) await ev.action.setTitle(shortcutFor(ev.payload.settings).label);

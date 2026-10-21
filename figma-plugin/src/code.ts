@@ -8,7 +8,7 @@ import {
 	type PropertyId,
 	type StateMessage,
 	type ToFigma,
-} from "@figma-dial/protocol";
+} from "@figmadeck/protocol";
 
 import type { CodeToUi, UiToCode } from "./messages";
 import { ADAPTERS, aggregate, firstNumber } from "./properties";
@@ -83,10 +83,10 @@ function handle(msg: ToFigma): void {
 figma.ui.onmessage = (msg: UiToCode) => {
 	if (msg.kind === "status") {
 		if (msg.connected) {
-			figma.notify("Figma Dial connected to Stream Deck");
+			figma.notify("FigmaDeck connected to Stream Deck");
 			sendState();
 		} else if (wasConnected) {
-			figma.notify("Figma Dial lost the Stream Deck, retrying…");
+			figma.notify("FigmaDeck lost the Stream Deck, retrying…");
 		}
 		wasConnected = msg.connected;
 		return;

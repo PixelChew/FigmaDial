@@ -1,13 +1,13 @@
 {
-	"Name": "Figma Dial",
+	"Name": "FigmaDeck",
 	"Version": "0.1.0.0",
 	"Author": "PixelChew",
 	"Actions": [
 		{
 			"Name": "Property dial",
-			"UUID": "com.pixelchew.figma-dial.property",
+			"UUID": "com.pixelchew.figmadeck.property",
 			"Icon": "imgs/actions/dial/icon",
-			"Tooltip": "Controls opacity, blur, radius, stroke or gap on the Figma selection. Needs the Figma Dial plugin running in Figma.",
+			"Tooltip": "Controls opacity, blur, radius, stroke or gap on the Figma selection. Needs the FigmaDeck plugin running in Figma.",
 			"PropertyInspectorPath": "ui/property-dial.html",
 			"Controllers": ["Encoder"],
 			"Encoder": {
@@ -22,7 +22,7 @@
 		},
 		{
 			"Name": "Focused field",
-			"UUID": "com.pixelchew.figma-dial.field",
+			"UUID": "com.pixelchew.figmadeck.field",
 			"Icon": "imgs/actions/dial/icon",
 			"Tooltip": "Nudges whichever number field has focus in Figma's properties panel.",
 			"Controllers": ["Encoder"],
@@ -38,7 +38,7 @@
 		},
 		{
 			"Name": "Figma shortcut",
-			"UUID": "com.pixelchew.figma-dial.shortcut",
+			"UUID": "com.pixelchew.figmadeck.shortcut",
 			"Icon": "imgs/actions/dial/icon",
 			"Tooltip": "Fires a Figma shortcut such as paste in place.",
 			"PropertyInspectorPath": "ui/shortcut-key.html",
@@ -46,7 +46,7 @@
 			"States": [{ "Image": "imgs/actions/dial/key", "TitleAlignment": "middle" }]
 		}
 	],
-	"Category": "Figma Dial",
+	"Category": "FigmaDeck",
 	"CategoryIcon": "imgs/plugin/category-icon",
 	"CodePath": "bin/plugin.js",
 	"Description": "Control Figma from the Stream Deck+ dials.",
@@ -55,5 +55,5 @@
 	"Software": { "MinimumVersion": "7.1" },
 	"OS": [{ "Platform": "mac", "MinimumVersion": "12" }],
 	"Nodejs": { "Version": "24", "Debug": "enabled" },
-	"UUID": "com.pixelchew.figma-dial"
+	"UUID": "com.pixelchew.figmadeck"
 }

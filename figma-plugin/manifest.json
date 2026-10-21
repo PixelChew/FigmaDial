@@ -1,6 +1,6 @@
 {
-	"name": "Figma Dial",
-	"id": "figma-dial-dev",
+	"name": "FigmaDeck",
+	"id": "figmadeck-dev",
 	"api": "1.0.0",
 	"main": "dist/code.js",
 	"ui": "dist/ui.html",

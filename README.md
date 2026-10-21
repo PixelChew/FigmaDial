@@ -1,4 +1,4 @@
-# Figma Dial
+# FigmaDeck
 
 Control Figma from the Stream Deck+ dials and keys (macOS).
 
@@ -27,8 +27,8 @@ The Property dial needs the Figma plugin running in the file you're working on. 
 You need Node 20 or later (`brew install node`), the Stream Deck app 7.1 or later, and the Figma **desktop** app.
 
 ```sh
-git clone https://github.com/PixelChew/FigmaDial.git
-cd FigmaDial
+git clone https://github.com/PixelChew/FigmaDeck.git
+cd FigmaDeck
 npm install
 npm run build
 ```
@@ -39,15 +39,15 @@ npm run build
 npm install -g @elgato/cli
 streamdeck dev                     # turns on developer mode in the Stream Deck app (once)
 cd streamdeck-plugin
-streamdeck link com.pixelchew.figma-dial.sdPlugin
-streamdeck restart com.pixelchew.figma-dial
+streamdeck link com.pixelchew.figmadeck.sdPlugin
+streamdeck restart com.pixelchew.figmadeck
 ```
 
-"Figma Dial" now shows up in the Stream Deck app's action list. Drag **Property dial** and **Focused field** onto dials, and **Figma shortcut** onto keys (pick the shortcut in the panel below).
+"FigmaDeck" now shows up in the Stream Deck app's action list. Drag **Property dial** and **Focused field** onto dials, and **Figma shortcut** onto keys (pick the shortcut in the panel below).
 
 ### 2. Load the Figma plugin
 
-In Figma desktop, open any design file, then **Plugins → Development → Import plugin from manifest…** and pick `figma-plugin/manifest.json`. Run it from **Plugins → Development → Figma Dial**. A "connected to Stream Deck" toast means the bridge works.
+In Figma desktop, open any design file, then **Plugins → Development → Import plugin from manifest…** and pick `figma-plugin/manifest.json`. Run it from **Plugins → Development → FigmaDeck**. A "connected to Stream Deck" toast means the bridge works.
 
 The plugin has no window; it keeps running until you close the file. Put a **Figma shortcut → Run last plugin** key on your deck so starting it is one press.
 
@@ -67,13 +67,13 @@ npm test                                  # from the repo root: protocol logic a
 npm run typecheck
 ```
 
-Stream Deck plugin logs are in `streamdeck-plugin/com.pixelchew.figma-dial.sdPlugin/logs/`. Figma plugin logs are in Figma's developer console (**Plugins → Development → Show/Hide console**).
+Stream Deck plugin logs are in `streamdeck-plugin/com.pixelchew.figmadeck.sdPlugin/logs/`. Figma plugin logs are in Figma's developer console (**Plugins → Development → Show/Hide console**).
 
 ### Adding a property
 
 1. Add it to `PropertyId`, `PROPERTIES` and `PROPERTY_ORDER` in `protocol/src/index.ts`.
 2. Add an adapter (supports / get / set) in `figma-plugin/src/properties.ts`.
-3. Add a checkbox in `streamdeck-plugin/com.pixelchew.figma-dial.sdPlugin/ui/property-dial.html`.
+3. Add a checkbox in `streamdeck-plugin/com.pixelchew.figmadeck.sdPlugin/ui/property-dial.html`.
 
 ## Known limits
 

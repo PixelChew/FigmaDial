@@ -1,4 +1,4 @@
-import type { PropertyId, PropertyValue } from "@figma-dial/protocol";
+import type { PropertyId, PropertyValue } from "@figmadeck/protocol";
 
 /** How one property is read from and written to a node, in display units (opacity 0–100, everything else px). */
 interface Adapter {

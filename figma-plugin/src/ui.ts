@@ -1,6 +1,6 @@
 // Hidden UI iframe: owns the WebSocket to the Stream Deck plugin, because the plugin's main thread has no network access.
 // Everything received is relayed to code.ts untouched; parsing happens there.
-import { backoffMs, DEFAULT_PORT } from "@figma-dial/protocol";
+import { backoffMs, DEFAULT_PORT } from "@figmadeck/protocol";
 
 import type { CodeToUi, UiToCode } from "./messages";
 
