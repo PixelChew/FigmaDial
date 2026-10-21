@@ -123,7 +123,9 @@ export class PropertyDial extends SingletonAction<Settings> {
 		else text = formatValue(value, info);
 
 		try {
-			await dial.action.setFeedback({ title: info.label, value: text, indicator: { value: indicatorPercent(value, info) } });
+			// Hide the bar when there's no number to show, otherwise an empty track reads like a value.
+			const indicator = typeof value === "number" && bridge.connected ? { value: indicatorPercent(value, info), enabled: true } : { enabled: false };
+			await dial.action.setFeedback({ title: info.label, value: text, indicator });
 		} catch (err) {
 			streamDeck.logger.warn(`setFeedback failed: ${String(err)}`);
 		}

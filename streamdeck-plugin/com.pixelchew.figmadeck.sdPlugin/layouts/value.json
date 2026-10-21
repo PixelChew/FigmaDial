@@ -13,9 +13,9 @@
 		{
 			"key": "value",
 			"type": "text",
-			"rect": [12, 30, 176, 40],
+			"rect": [12, 34, 176, 32],
 			"alignment": "left",
-			"font": { "size": 30, "weight": 600 },
+			"font": { "size": 24, "weight": 600 },
 			"text-overflow": "fade"
 		},
 		{
