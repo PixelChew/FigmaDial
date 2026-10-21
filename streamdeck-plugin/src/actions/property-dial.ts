@@ -28,8 +28,6 @@ import {
 import { bridge } from "../bridge";
 
 type Settings = {
-	/** Properties this dial cycles through, in order. Empty or missing means all of them. */
-	properties?: PropertyId[];
 	/** Property the dial currently controls. */
 	current?: PropertyId;
 };
@@ -40,7 +38,7 @@ type DialState = {
 	coalescer: TickCoalescer;
 	/** Fires when the dial has been held long enough to open the property menu. */
 	holdTimer: ReturnType<typeof setTimeout> | undefined;
-	/** Index into the enabled properties while the menu is open; undefined when it's closed. */
+	/** Index into PROPERTY_ORDER while the menu is open; undefined when it's closed. */
 	menuIndex: number | undefined;
 };
 
@@ -101,8 +99,7 @@ export class PropertyDial extends SingletonAction<Settings> {
 		}
 		// Turning while held opens the menu straight away rather than waiting for the hold timer.
 		if (dial.menuIndex === undefined) this.openMenu(dial);
-		const order = enabled(dial.settings);
-		dial.menuIndex = wrapIndex(dial.menuIndex ?? 0, Math.sign(ev.payload.ticks), order.length);
+		dial.menuIndex = wrapIndex(dial.menuIndex ?? 0, Math.sign(ev.payload.ticks), PROPERTY_ORDER.length);
 		await this.render(dial, bridge.state);
 	}
 
@@ -129,7 +126,7 @@ export class PropertyDial extends SingletonAction<Settings> {
 			return;
 		}
 
-		const picked = enabled(dial.settings)[dial.menuIndex];
+		const picked = PROPERTY_ORDER[dial.menuIndex];
 		dial.menuIndex = undefined;
 		dial.settings = { ...dial.settings, current: picked };
 		await dial.action.setSettings(dial.settings);
@@ -144,7 +141,7 @@ export class PropertyDial extends SingletonAction<Settings> {
 	private openMenu(dial: DialState): void {
 		if (dial.holdTimer !== undefined) clearTimeout(dial.holdTimer);
 		dial.holdTimer = undefined;
-		dial.menuIndex = enabled(dial.settings).indexOf(current(dial.settings));
+		dial.menuIndex = PROPERTY_ORDER.indexOf(current(dial.settings));
 	}
 
 	private async render(dial: DialState, state: StateMessage | undefined): Promise<void> {
@@ -172,23 +169,16 @@ function valueFeedback(dial: DialState, state: StateMessage | undefined): Feedba
 }
 
 function menuFeedback(dial: DialState, state: StateMessage | undefined): FeedbackPayload {
-	const order = enabled(dial.settings);
-	const id = order[dial.menuIndex ?? 0];
+	const id = PROPERTY_ORDER[dial.menuIndex ?? 0];
 	// Properties the selection can't use stay in the menu but are marked, so the list doesn't jump around.
 	const usable = !state || state.selectionCount === 0 || id in state.values;
 	return {
-		title: `Pick effect  ${(dial.menuIndex ?? 0) + 1}/${order.length}`,
+		title: `Pick effect  ${(dial.menuIndex ?? 0) + 1}/${PROPERTY_ORDER.length}`,
 		value: `‹ ${PROPERTIES[id].label}${usable ? "" : " ✕"} ›`,
 		indicator: { enabled: false },
 	};
 }
 
-function enabled(settings: Settings): PropertyId[] {
-	const list = (settings.properties ?? []).filter(isPropertyId);
-	return list.length > 0 ? PROPERTY_ORDER.filter((p) => list.includes(p)) : PROPERTY_ORDER;
-}
-
 function current(settings: Settings): PropertyId {
-	const order = enabled(settings);
-	return settings.current && order.includes(settings.current) ? settings.current : order[0];
+	return isPropertyId(settings.current) ? settings.current : PROPERTY_ORDER[0];
 }
