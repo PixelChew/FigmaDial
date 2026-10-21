@@ -14,8 +14,9 @@ import {
 import type { CodeToUi, UiToCode } from "./messages";
 import { ADAPTERS, aggregate, aggregateMode, cornerRadiusMax, cycleMode, firstNumber } from "./properties";
 
-// The UI iframe stays hidden: it only exists to hold the WebSocket. Connection status goes to the console.
-figma.showUI(__html__, { visible: false });
+// The UI iframe only holds the WebSocket, so the window is shrunk to just its title bar. A hidden UI would make
+// Figma show a permanent "Running FigmaDeck" bar instead. Connection status goes to the console.
+figma.showUI(__html__, { width: 70, height: 0, title: "FigmaDeck" });
 console.log("[FigmaDeck] plugin started");
 
 let undoTimer: ReturnType<typeof setTimeout> | undefined;
