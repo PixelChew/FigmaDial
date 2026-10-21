@@ -55,12 +55,25 @@ const cornerRadius: Adapter = {
 	},
 };
 
+/** Figma's own default when you add a stroke: solid black. */
+const DEFAULT_STROKE: SolidPaint = { type: "SOLID", color: { r: 0, g: 0, b: 0 } };
+
 const strokeWeight: Adapter = {
-	// Without a stroke, changing the weight does nothing visible, so it isn't offered.
-	supports: (node) => has(node, "strokeWeight") && has(node, "strokes") && (node as MinimalStrokesMixin & SceneNode).strokes.length > 0,
-	get: (node) => numberOrMixed((node as MinimalStrokesMixin & SceneNode).strokeWeight),
+	supports: (node) => has(node, "strokeWeight") && has(node, "strokes"),
+	// A layer without a stroke reads as 0, so dialling up from nothing adds one.
+	get: (node) => {
+		const target = node as MinimalStrokesMixin & SceneNode;
+		return target.strokes.length === 0 ? 0 : numberOrMixed(target.strokeWeight);
+	},
 	set: (node, value) => {
-		(node as MinimalStrokesMixin & SceneNode).strokeWeight = value;
+		const target = node as MinimalStrokesMixin & SceneNode;
+		// Like blur, dialling down to zero removes the stroke rather than leaving an invisible one.
+		if (value <= 0) {
+			target.strokes = [];
+			return;
+		}
+		if (target.strokes.length === 0) target.strokes = [DEFAULT_STROKE];
+		target.strokeWeight = value;
 	},
 };
 

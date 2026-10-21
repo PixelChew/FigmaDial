@@ -4,7 +4,7 @@ Control Figma from the Stream Deck+ dials and keys (macOS).
 
 | Action | Where | What it does |
 | --- | --- | --- |
-| **Property dial** | Dial | Turn to change opacity, layer blur, corner radius, stroke weight or auto-layout gap on the selection. Press to cycle to the next property your selection supports. Tap the touch strip to reset. Hold while turning for bigger steps. The touch strip shows the live value. One turn is one undo step. |
+| **Property dial** | Dial | Turn to change opacity, layer blur, corner radius, stroke weight or auto-layout gap on the selection. Turning blur or stroke up on a layer without one adds it; turning it to 0 removes it. Press to cycle to the next property your selection supports. Tap the touch strip to reset. Hold while turning for bigger steps. The touch strip shows the live value. One turn is one undo step. |
 | **Focused field** | Dial | Nudges whichever number field has focus in Figma's properties panel (it sends ↑/↓, hold to send Shift+↑/↓ for ×10). Press to Tab to the next field, tap the strip to leave the field. Works on any field, without the Figma plugin, but can't show the value. |
 | **Figma shortcut** | Key | Fires a Figma shortcut: paste in place, paste to replace, copy/paste properties, frame selection, auto layout, group, component, run last plugin, and more. |
 
