@@ -11,7 +11,7 @@ import {
 } from "@figmadeck/protocol";
 
 import type { CodeToUi, UiToCode } from "./messages";
-import { ADAPTERS, aggregate, firstNumber } from "./properties";
+import { ADAPTERS, aggregate, aggregateMode, cycleMode, firstNumber } from "./properties";
 
 // A small status window, so it's obvious the plugin is running and whether it reached the Stream Deck.
 figma.showUI(__html__, { width: 240, height: 56, title: "FigmaDeck", themeColors: true });
@@ -33,11 +33,14 @@ function selection(): readonly SceneNode[] {
 function sendState(): void {
 	const nodes = selection();
 	const values: StateMessage["values"] = {};
+	const modes: StateMessage["modes"] = {};
 	for (const id of PROPERTY_ORDER) {
 		const value = aggregate(id, nodes);
 		if (value !== undefined) values[id] = value;
+		const mode = aggregateMode(id, nodes);
+		if (mode !== undefined) modes[id] = mode;
 	}
-	const state: StateMessage = { type: "state", fileName: figma.root.name, selectionCount: nodes.length, values };
+	const state: StateMessage = { type: "state", fileName: figma.root.name, selectionCount: nodes.length, values, modes };
 	toUi({ kind: "send", data: JSON.stringify(state) });
 }
 
@@ -73,6 +76,9 @@ function handle(msg: ToFigma): void {
 
 	if (msg.type === "reset") {
 		setAll(msg.property, nodes, info.reset);
+		figma.commitUndo();
+	} else if (msg.type === "mode") {
+		cycleMode(msg.property, nodes);
 		figma.commitUndo();
 	} else {
 		// A mixed selection snaps to the first layer's value, then steps.

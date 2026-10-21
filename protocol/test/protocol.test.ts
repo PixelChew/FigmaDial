@@ -11,6 +11,7 @@ import {
 	PROPERTY_ORDER,
 	stepValue,
 	TickCoalescer,
+	wrapIndex,
 	type PropertyId,
 } from "../src/index";
 
@@ -68,8 +69,24 @@ describe("parsing", () => {
 	});
 
 	it("drops unknown properties from state", () => {
-		const raw = JSON.stringify({ type: "state", fileName: "File", selectionCount: 2, values: { opacity: "mixed", bogus: 1, layerBlur: "x" } });
-		expect(parseToStreamDeck(raw)).toEqual({ type: "state", fileName: "File", selectionCount: 2, values: { opacity: "mixed" } });
+		const raw = JSON.stringify({
+			type: "state",
+			fileName: "File",
+			selectionCount: 2,
+			values: { opacity: "mixed", bogus: 1, layerBlur: "x" },
+			modes: { strokeWeight: "Inside", bogus: "x", opacity: 3 },
+		});
+		expect(parseToStreamDeck(raw)).toEqual({
+			type: "state",
+			fileName: "File",
+			selectionCount: 2,
+			values: { opacity: "mixed" },
+			modes: { strokeWeight: "Inside" },
+		});
+	});
+
+	it("accepts mode messages", () => {
+		expect(parseToFigma(JSON.stringify({ type: "mode", property: "strokeWeight" }))).toEqual({ type: "mode", property: "strokeWeight" });
 	});
 });
 
@@ -85,6 +102,14 @@ describe("display helpers", () => {
 		expect(indicatorPercent(50, opacity)).toBe(50);
 		expect(indicatorPercent("mixed", opacity)).toBe(0);
 		expect(indicatorPercent(500, PROPERTIES.layerBlur)).toBe(100);
+	});
+});
+
+describe("wrapIndex", () => {
+	it("wraps both ways", () => {
+		expect(wrapIndex(4, 1, 5)).toBe(0);
+		expect(wrapIndex(0, -1, 5)).toBe(4);
+		expect(wrapIndex(1, -7, 5)).toBe(4);
 	});
 });
 

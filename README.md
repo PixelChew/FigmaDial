@@ -4,9 +4,19 @@ Control Figma from the Stream Deck+ dials and keys (macOS).
 
 | Action | Where | What it does |
 | --- | --- | --- |
-| **Property dial** | Dial | Turn to change opacity, layer blur, corner radius, stroke weight or auto-layout gap on the selection. Turning blur or stroke up on a layer without one adds it; turning it to 0 removes it. Press to cycle to the next property your selection supports. Tap the touch strip to reset. Hold while turning for bigger steps. The touch strip shows the live value. One turn is one undo step. |
+| **Property dial** | Dial | **Turn** to change opacity, layer blur, corner radius, stroke weight or auto-layout gap on the selection (spin fast for bigger steps). **Click** to cycle that property's mode (see below). **Hold, or hold and turn,** to open a property menu on the touch strip; turn to choose, release to pick. **Tap the strip** to reset. Turning blur or stroke up on a layer without one adds it; turning it to 0 removes it. The strip shows the live value and mode, and one turn is one undo step. |
 | **Focused field** | Dial | Nudges whichever number field has focus in Figma's properties panel (it sends ↑/↓, hold to send Shift+↑/↓ for ×10). Press to Tab to the next field, tap the strip to leave the field. Works on any field, without the Figma plugin, but can't show the value. |
 | **Figma shortcut** | Key | Fires a Figma shortcut: paste in place, paste to replace, copy/paste properties, frame selection, auto layout, group, component, run last plugin, and more. |
+
+### Modes (click the Property dial)
+
+| Property | Click cycles |
+| --- | --- |
+| Opacity | Blend mode: Normal → Darken → Multiply → Lighten → Screen → Overlay |
+| Blur | Layer blur ↔ Background blur |
+| Radius | Corner smoothing: 0% → 60% (Figma's iOS preset) → 100% |
+| Stroke | Position: Inside → Outside → Center |
+| Gap | Auto layout direction: Row → Column → Wrap |
 
 ## How it fits together
 

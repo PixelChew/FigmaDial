@@ -64,12 +64,18 @@ export interface ResetMessage {
 	property: PropertyId;
 }
 
+/** Moves the property to its next mode, e.g. stroke Inside → Outside → Center. */
+export interface ModeMessage {
+	type: "mode";
+	property: PropertyId;
+}
+
 /** Asks Figma to send a fresh state message. */
 export interface RefreshMessage {
 	type: "refresh";
 }
 
-export type ToFigma = DialMessage | ResetMessage | RefreshMessage;
+export type ToFigma = DialMessage | ResetMessage | ModeMessage | RefreshMessage;
 
 // Figma -> Stream Deck
 
@@ -80,6 +86,8 @@ export interface StateMessage {
 	selectionCount: number;
 	/** Only properties every selected layer supports are present. */
 	values: Partial<Record<PropertyId, PropertyValue>>;
+	/** Each supported property's current mode label, or "Mixed". */
+	modes: Partial<Record<PropertyId, string>>;
 }
 
 export type ToStreamDeck = StateMessage;
@@ -88,7 +96,7 @@ export function parseToFigma(raw: string): ToFigma | undefined {
 	const msg = safeParse(raw);
 	if (msg?.type === "refresh") return { type: "refresh" };
 	if (!isPropertyId(msg?.property)) return undefined;
-	if (msg.type === "reset") return { type: "reset", property: msg.property };
+	if (msg.type === "reset" || msg.type === "mode") return { type: msg.type, property: msg.property };
 	if (msg.type === "dial" && typeof msg.ticks === "number" && Number.isInteger(msg.ticks)) {
 		return { type: "dial", property: msg.property, ticks: msg.ticks, fast: msg.fast === true };
 	}
@@ -104,7 +112,13 @@ export function parseToStreamDeck(raw: string): ToStreamDeck | undefined {
 	for (const [key, value] of Object.entries(msg.values as Record<string, unknown>)) {
 		if (isPropertyId(key) && (typeof value === "number" || value === "mixed")) values[key] = value;
 	}
-	return { type: "state", fileName: typeof msg.fileName === "string" ? msg.fileName : "", selectionCount: msg.selectionCount, values };
+	const modes: StateMessage["modes"] = {};
+	if (typeof msg.modes === "object" && msg.modes !== null) {
+		for (const [key, value] of Object.entries(msg.modes as Record<string, unknown>)) {
+			if (isPropertyId(key) && typeof value === "string") modes[key] = value;
+		}
+	}
+	return { type: "state", fileName: typeof msg.fileName === "string" ? msg.fileName : "", selectionCount: msg.selectionCount, values, modes };
 }
 
 function safeParse(raw: string): Record<string, unknown> | undefined {
@@ -138,6 +152,14 @@ export function stepValue(current: PropertyValue, fallback: number, ticks: numbe
 
 /** A spin counts as fast when one rotate event carries more than this many ticks. */
 export const FAST_TICKS = 3;
+
+/** How long the dial must be held before the property menu opens on the touch strip. */
+export const HOLD_MS = 350;
+
+/** Moves through a list by ticks, wrapping at both ends. */
+export function wrapIndex(index: number, ticks: number, length: number): number {
+	return (((index + ticks) % length) + length) % length;
+}
 
 /**
  * Picks the next property for a dial press: the next one after `current` in `order` that the selection supports.

@@ -7,14 +7,14 @@
 			"Name": "Property dial",
 			"UUID": "com.pixelchew.figmadeck.property",
 			"Icon": "imgs/actions/dial/icon",
-			"Tooltip": "Controls opacity, blur, radius, stroke or gap on the Figma selection. Needs the FigmaDeck plugin running in Figma.",
+			"Tooltip": "Controls opacity, blur, radius, stroke or gap on the Figma selection, plus each one's mode. Needs the FigmaDeck plugin running in Figma.",
 			"PropertyInspectorPath": "ui/property-dial.html",
 			"Controllers": ["Encoder"],
 			"Encoder": {
 				"layout": "layouts/value.json",
 				"TriggerDescription": {
-					"Rotate": "Adjust value (hold for big steps)",
-					"Push": "Next property",
+					"Rotate": "Adjust value (spin fast for big steps)",
+					"Push": "Click: cycle mode. Hold and turn: pick effect",
 					"Touch": "Reset"
 				}
 			},
