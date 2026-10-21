@@ -14,14 +14,12 @@ import {
 import type { CodeToUi, UiToCode } from "./messages";
 import { ADAPTERS, aggregate, aggregateMode, cornerRadiusMax, cycleMode, firstNumber } from "./properties";
 
-// A small status window, so it's obvious the plugin is running and whether it reached the Stream Deck.
-figma.showUI(__html__, { width: 240, height: 56, title: "FigmaDeck", themeColors: true });
+// The UI iframe stays hidden: it only exists to hold the WebSocket. Connection status goes to the console.
+figma.showUI(__html__, { visible: false });
 console.log("[FigmaDeck] plugin started");
-figma.notify("FigmaDeck started, looking for Stream Deck…");
 
 let undoTimer: ReturnType<typeof setTimeout> | undefined;
 let stateTimer: ReturnType<typeof setTimeout> | undefined;
-let wasConnected = false;
 
 function toUi(msg: CodeToUi): void {
 	figma.ui.postMessage(msg);
@@ -153,13 +151,7 @@ let queue: Promise<void> = Promise.resolve();
 
 figma.ui.onmessage = (msg: UiToCode) => {
 	if (msg.kind === "status") {
-		if (msg.connected) {
-			figma.notify("FigmaDeck connected to Stream Deck");
-			sendState();
-		} else if (wasConnected) {
-			figma.notify("FigmaDeck lost the Stream Deck, retrying…");
-		}
-		wasConnected = msg.connected;
+		if (msg.connected) sendState();
 		return;
 	}
 	const parsed = parseToFigma(msg.data);
