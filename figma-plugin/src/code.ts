@@ -13,8 +13,10 @@ import {
 import type { CodeToUi, UiToCode } from "./messages";
 import { ADAPTERS, aggregate, firstNumber } from "./properties";
 
-figma.showUI(__html__, { visible: false });
+// A small status window, so it's obvious the plugin is running and whether it reached the Stream Deck.
+figma.showUI(__html__, { width: 240, height: 56, title: "FigmaDeck", themeColors: true });
 console.log("[FigmaDeck] plugin started");
+figma.notify("FigmaDeck started, looking for Stream Deck…");
 
 let undoTimer: ReturnType<typeof setTimeout> | undefined;
 let stateTimer: ReturnType<typeof setTimeout> | undefined;

@@ -14,7 +14,7 @@ const writeUi = {
 		build.onEnd(async (result) => {
 			if (result.errors.length > 0) return;
 			const js = result.outputFiles[0].text;
-			await writeFile("dist/ui.html", `<!doctype html><html><body><script>${js}</script></body></html>\n`);
+			await writeFile("dist/ui.html", `<!doctype html><html><head><style>body{margin:0;padding:0 12px;height:56px;display:flex;align-items:center;font:12px/1.3 Inter,system-ui,sans-serif;background:var(--figma-color-bg,#fff);color:var(--figma-color-text,#333)}</style></head><body><script>${js}</script></body></html>\n`);
 		});
 	},
 };
