@@ -83,11 +83,13 @@ async function handle(msg: ToFigma): Promise<void> {
 	const info = PROPERTIES[msg.property];
 
 	if (msg.type === "reset") {
-		if (info.reset === undefined) return;
-		await setAll(msg.property, nodes, info.reset);
+		const reset = ADAPTERS[msg.property].reset;
+		if (reset) nodes.forEach(reset);
+		else if (info.reset !== undefined) await setAll(msg.property, nodes, info.reset);
+		else return;
 		figma.commitUndo();
 	} else if (msg.type === "mode") {
-		cycleMode(msg.property, nodes);
+		await cycleMode(msg.property, nodes);
 		figma.commitUndo();
 	} else {
 		// A mixed selection snaps to the first layer's value, then steps.

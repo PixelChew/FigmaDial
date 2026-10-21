@@ -25,13 +25,21 @@ export type PropertyId =
 	| "padding"
 	| "rotation"
 	| "size"
-	| "fontSize";
+	| "fontSize"
+	| "innerShadow"
+	| "fillOpacity"
+	| "smoothing"
+	| "dashes"
+	| "lineHeight"
+	| "letterSpacing"
+	| "paragraph";
 
 export interface PropertyInfo {
 	id: PropertyId;
 	/** Short label for the touch strip. */
 	label: string;
-	unit: "%" | "px" | "°";
+	/** Empty when the unit depends on the mode (line height and letter spacing can be px or %); the mode label says which. */
+	unit: "%" | "px" | "°" | "";
 	/** Change per tick. */
 	step: number;
 	/** Change per tick when the dial is turned fast or held down while turning. */
@@ -49,11 +57,18 @@ export const PROPERTIES: Record<PropertyId, PropertyInfo> = {
 	cornerRadius: { id: "cornerRadius", label: "Radius", unit: "px", step: 1, fastStep: 8, min: 0, max: 200, reset: 0 },
 	strokeWeight: { id: "strokeWeight", label: "Stroke", unit: "px", step: 1, fastStep: 4, min: 0, max: 100, reset: 1 },
 	itemSpacing: { id: "itemSpacing", label: "Gap", unit: "px", step: 1, fastStep: 8, min: 0, max: 400, reset: 0 },
-	shadow: { id: "shadow", label: "Shadow", unit: "px", step: 1, fastStep: 4, min: 0, max: 100, reset: 0 },
+	shadow: { id: "shadow", label: "Shadow", unit: "px", step: 1, fastStep: 4, min: -100, max: 100, reset: 0 },
 	padding: { id: "padding", label: "Padding", unit: "px", step: 1, fastStep: 8, min: 0, max: 400, reset: 0 },
 	rotation: { id: "rotation", label: "Rotate", unit: "°", step: 1, fastStep: 15, min: -180, max: 180, reset: 0 },
 	size: { id: "size", label: "Size", unit: "px", step: 1, fastStep: 10, min: 1, max: 4000 },
 	fontSize: { id: "fontSize", label: "Font", unit: "px", step: 1, fastStep: 4, min: 1, max: 400 },
+	innerShadow: { id: "innerShadow", label: "Inner", unit: "px", step: 1, fastStep: 4, min: -100, max: 100, reset: 0 },
+	fillOpacity: { id: "fillOpacity", label: "Fill", unit: "%", step: 1, fastStep: 5, min: 0, max: 100, reset: 100 },
+	smoothing: { id: "smoothing", label: "Smooth", unit: "%", step: 1, fastStep: 10, min: 0, max: 100, reset: 0 },
+	dashes: { id: "dashes", label: "Dashes", unit: "px", step: 1, fastStep: 4, min: 0, max: 100, reset: 0 },
+	lineHeight: { id: "lineHeight", label: "Line", unit: "", step: 1, fastStep: 5, min: 0, max: 400 },
+	letterSpacing: { id: "letterSpacing", label: "Letter", unit: "", step: 0.5, fastStep: 2, min: -50, max: 100, reset: 0 },
+	paragraph: { id: "paragraph", label: "Paragraph", unit: "px", step: 1, fastStep: 4, min: 0, max: 400, reset: 0 },
 };
 
 export const PROPERTY_ORDER: PropertyId[] = [
@@ -67,7 +82,17 @@ export const PROPERTY_ORDER: PropertyId[] = [
 	"rotation",
 	"size",
 	"fontSize",
+	"innerShadow",
+	"fillOpacity",
+	"smoothing",
+	"dashes",
+	"lineHeight",
+	"letterSpacing",
+	"paragraph",
 ];
+
+/** What the hold menu lists until a dial's settings say otherwise. */
+export const DEFAULT_MENU: PropertyId[] = PROPERTY_ORDER.slice(0, 10);
 
 export function isPropertyId(value: unknown): value is PropertyId {
 	return typeof value === "string" && value in PROPERTIES;
