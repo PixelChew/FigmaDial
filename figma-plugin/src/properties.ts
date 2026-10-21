@@ -4,9 +4,14 @@ import type { PropertyId, PropertyValue } from "@figmadeck/protocol";
 interface Adapter {
 	supports(node: SceneNode): boolean;
 	get(node: SceneNode): PropertyValue;
-	set(node: SceneNode, value: number): void;
+	/** May be async: text changes have to load the node's fonts first. */
+	set(node: SceneNode, value: number): void | Promise<void>;
 	/** The property's secondary setting that a dial press cycles through, e.g. stroke position. */
 	modes: ModeSpec;
+	/** Step per tick that replaces the property's default, e.g. rotation's 15° snap mode. */
+	step?(): number | undefined;
+	/** Flip the dial's direction, so turning clockwise rotates the layer clockwise (Figma counts counter-clockwise). */
+	invert?: boolean;
 }
 
 /** Modes are identified by their touch strip label. */
@@ -157,7 +162,172 @@ const itemSpacing: Adapter = {
 	},
 };
 
-export const ADAPTERS: Record<PropertyId, Adapter> = { opacity, layerBlur, cornerRadius, strokeWeight, itemSpacing };
+type ShadowType = "DROP_SHADOW" | "INNER_SHADOW";
+const SHADOW_LABELS: Record<ShadowType, string> = { DROP_SHADOW: "Drop", INNER_SHADOW: "Inner" };
+const isShadow = (e: Effect): e is DropShadowEffect | InnerShadowEffect => e.type === "DROP_SHADOW" || e.type === "INNER_SHADOW";
+
+/** Shadow type used when the dial adds a shadow to a layer that has none; set by pressing the dial. */
+let newShadowType: ShadowType = "DROP_SHADOW";
+
+/** The value is the shadow's blur; a new one starts from Figma's default look (black at 25%, 4 px down). */
+const shadow: Adapter = {
+	supports: (node) => has(node, "effects"),
+	get: (node) => (node as BlendMixin & SceneNode).effects.find(isShadow)?.radius ?? 0,
+	set: (node, value) => {
+		const target = node as BlendMixin & SceneNode;
+		const effects = [...target.effects];
+		const index = effects.findIndex(isShadow);
+		if (index >= 0) {
+			if (value <= 0) effects.splice(index, 1);
+			else effects[index] = { ...(effects[index] as DropShadowEffect | InnerShadowEffect), radius: value };
+		} else if (value > 0) {
+			effects.push({
+				type: newShadowType,
+				color: { r: 0, g: 0, b: 0, a: 0.25 },
+				offset: { x: 0, y: 4 },
+				radius: value,
+				spread: 0,
+				visible: true,
+				blendMode: "NORMAL",
+			} as DropShadowEffect | InnerShadowEffect);
+		}
+		target.effects = effects;
+	},
+	modes: {
+		order: [SHADOW_LABELS.DROP_SHADOW, SHADOW_LABELS.INNER_SHADOW],
+		get: (node) => SHADOW_LABELS[(node as BlendMixin & SceneNode).effects.find(isShadow)?.type ?? newShadowType],
+		set: (node, mode) => {
+			newShadowType = mode === SHADOW_LABELS.INNER_SHADOW ? "INNER_SHADOW" : "DROP_SHADOW";
+			const target = node as BlendMixin & SceneNode;
+			target.effects = target.effects.map((e) => {
+				if (!isShadow(e)) return e;
+				// Inner shadows have no showShadowBehindNode, so build the effect fresh rather than spreading it.
+				const { color, offset, radius, spread, visible, blendMode } = e;
+				return { type: newShadowType, color, offset, radius, spread, visible, blendMode } as DropShadowEffect | InnerShadowEffect;
+			});
+		},
+	},
+};
+
+/** Which sides the padding dial changes. It's a dial setting, not something stored on the layer. */
+let paddingSides: "All" | "Horizontal" | "Vertical" = "All";
+const PADDING_KEYS = {
+	All: ["paddingTop", "paddingRight", "paddingBottom", "paddingLeft"],
+	Horizontal: ["paddingLeft", "paddingRight"],
+	Vertical: ["paddingTop", "paddingBottom"],
+} as const;
+
+const padding: Adapter = {
+	supports: itemSpacing.supports,
+	get: (node) => {
+		const frame = node as AutoLayoutMixin & SceneNode;
+		const values = PADDING_KEYS[paddingSides].map((key) => frame[key]);
+		return values.every((v) => v === values[0]) ? values[0] : "mixed";
+	},
+	set: (node, value) => {
+		const frame = node as AutoLayoutMixin & SceneNode;
+		for (const key of PADDING_KEYS[paddingSides]) frame[key] = value;
+	},
+	modes: {
+		order: ["All", "Horizontal", "Vertical"],
+		get: () => paddingSides,
+		set: (_node, mode) => {
+			paddingSides = mode as typeof paddingSides;
+		},
+	},
+};
+
+let rotationSnap = false;
+
+/** Rotates around the layer's centre, the way Figma's own rotation field does (the API's rotation setter pivots on the top-left). */
+const rotation: Adapter = {
+	supports: (node) => has(node, "rotation") && has(node, "relativeTransform") && has(node, "width"),
+	get: (node) => Math.round((node as LayoutMixin & SceneNode).rotation * 100) / 100,
+	set: (node, value) => {
+		const target = node as LayoutMixin & SceneNode;
+		const [[a, b, x], [c, d, y]] = target.relativeTransform;
+		const { width: w, height: h } = target;
+		const cx = x + a * (w / 2) + b * (h / 2);
+		const cy = y + c * (w / 2) + d * (h / 2);
+		const rad = (value * Math.PI) / 180;
+		const cos = Math.cos(rad);
+		const sin = Math.sin(rad);
+		target.relativeTransform = [
+			[cos, sin, cx - (cos * w) / 2 - (sin * h) / 2],
+			[-sin, cos, cy + (sin * w) / 2 - (cos * h) / 2],
+		];
+	},
+	modes: {
+		order: ["1° steps", "15° snap"],
+		get: () => (rotationSnap ? "15° snap" : "1° steps"),
+		set: (_node, mode) => {
+			rotationSnap = mode === "15° snap";
+		},
+	},
+	step: () => (rotationSnap ? 15 : undefined),
+	invert: true,
+};
+
+let sizeAxis: "Width" | "Height" | "Both" = "Width";
+
+/** "Both" changes the width and scales the height with it, keeping the aspect ratio. */
+const size: Adapter = {
+	supports: (node) => has(node, "resize") && has(node, "width"),
+	get: (node) => {
+		const target = node as LayoutMixin & SceneNode;
+		return Math.round((sizeAxis === "Height" ? target.height : target.width) * 100) / 100;
+	},
+	set: (node, value) => {
+		const target = node as LayoutMixin & SceneNode;
+		const { width, height } = target;
+		if (sizeAxis === "Width") target.resize(value, height);
+		else if (sizeAxis === "Height") target.resize(width, value);
+		else target.resize(value, Math.max(0.01, (height / width) * value));
+	},
+	modes: {
+		order: ["Width", "Height", "Both"],
+		get: () => sizeAxis,
+		set: (_node, mode) => {
+			sizeAxis = mode as typeof sizeAxis;
+		},
+	},
+};
+
+const ALIGN_LABELS: Record<TextNode["textAlignHorizontal"], string> = { LEFT: "Left", CENTER: "Center", RIGHT: "Right", JUSTIFIED: "Justify" };
+
+const fontSize: Adapter = {
+	supports: (node) => node.type === "TEXT",
+	get: (node) => numberOrMixed((node as TextNode).fontSize),
+	set: async (node, value) => {
+		const text = node as TextNode;
+		// Figma refuses text edits until every font used in the layer is loaded.
+		const fonts = text.characters.length > 0 ? text.getRangeAllFontNames(0, text.characters.length) : [text.fontName as FontName];
+		await Promise.all(fonts.map((font) => figma.loadFontAsync(font)));
+		text.fontSize = value;
+	},
+	// Click cycles the text alignment, which doesn't need fonts loaded.
+	modes: {
+		order: Object.values(ALIGN_LABELS),
+		get: (node) => ALIGN_LABELS[(node as TextNode).textAlignHorizontal],
+		set: (node, mode) => {
+			const entry = Object.entries(ALIGN_LABELS).find(([, label]) => label === mode);
+			if (entry) (node as TextNode).textAlignHorizontal = entry[0] as TextNode["textAlignHorizontal"];
+		},
+	},
+};
+
+export const ADAPTERS: Record<PropertyId, Adapter> = {
+	opacity,
+	layerBlur,
+	shadow,
+	cornerRadius,
+	strokeWeight,
+	itemSpacing,
+	padding,
+	rotation,
+	size,
+	fontSize,
+};
 
 /**
  * The property's value across all nodes: a number when they agree, "mixed" when they don't,

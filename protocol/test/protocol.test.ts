@@ -23,6 +23,10 @@ describe("stepValue", () => {
 		expect(stepValue(50, 0, -2, true, opacity)).toBe(40);
 	});
 
+	it("uses a step override when given", () => {
+		expect(stepValue(0, 0, 2, false, PROPERTIES.rotation, 15)).toBe(30);
+	});
+
 	it("clamps to the property range", () => {
 		expect(stepValue(99, 0, 5, false, opacity)).toBe(100);
 		expect(stepValue(1, 0, -5, true, opacity)).toBe(0);
@@ -96,12 +100,14 @@ describe("display helpers", () => {
 		expect(formatValue(4.5, PROPERTIES.cornerRadius)).toBe("4.5 px");
 		expect(formatValue("mixed", opacity)).toBe("Mixed");
 		expect(formatValue(undefined, opacity)).toBe("–");
+		expect(formatValue(-45, PROPERTIES.rotation)).toBe("-45°");
 	});
 
 	it("computes the bar fill", () => {
 		expect(indicatorPercent(50, opacity)).toBe(50);
 		expect(indicatorPercent("mixed", opacity)).toBe(0);
 		expect(indicatorPercent(500, PROPERTIES.layerBlur)).toBe(100);
+		expect(indicatorPercent(0, PROPERTIES.rotation)).toBe(50);
 	});
 });
 

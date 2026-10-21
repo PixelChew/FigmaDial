@@ -59,11 +59,19 @@ function scheduleUndoCommit(): void {
 	}, UNDO_IDLE_MS);
 }
 
-function setAll(id: PropertyId, nodes: readonly SceneNode[], value: number): void {
-	for (const node of nodes) ADAPTERS[id].set(node, value);
+async function setAll(id: PropertyId, nodes: readonly SceneNode[], value: number): Promise<void> {
+	await Promise.all(
+		nodes.map(async (node) => {
+			try {
+				await ADAPTERS[id].set(node, value);
+			} catch (err) {
+				console.warn(`[FigmaDeck] couldn't set ${id} on ${node.name}:`, err);
+			}
+		}),
+	);
 }
 
-function handle(msg: ToFigma): void {
+async function handle(msg: ToFigma): Promise<void> {
 	if (msg.type === "refresh") {
 		sendState();
 		return;
@@ -75,19 +83,26 @@ function handle(msg: ToFigma): void {
 	const info = PROPERTIES[msg.property];
 
 	if (msg.type === "reset") {
-		setAll(msg.property, nodes, info.reset);
+		if (info.reset === undefined) return;
+		await setAll(msg.property, nodes, info.reset);
 		figma.commitUndo();
 	} else if (msg.type === "mode") {
 		cycleMode(msg.property, nodes);
 		figma.commitUndo();
 	} else {
 		// A mixed selection snaps to the first layer's value, then steps.
-		const next = stepValue(current, firstNumber(msg.property, nodes, info.reset), msg.ticks, msg.fast, info);
-		setAll(msg.property, nodes, next);
+		const fallback = firstNumber(msg.property, nodes, info.reset ?? info.min);
+		const adapter = ADAPTERS[msg.property];
+		const ticks = adapter.invert ? -msg.ticks : msg.ticks;
+		const next = stepValue(current, fallback, ticks, msg.fast, info, adapter.step?.());
+		await setAll(msg.property, nodes, next);
 		scheduleUndoCommit();
 	}
 	sendState();
 }
+
+/** Messages are handled one at a time, so a slow async change (loading fonts) can't interleave with the next tick. */
+let queue: Promise<void> = Promise.resolve();
 
 figma.ui.onmessage = (msg: UiToCode) => {
 	if (msg.kind === "status") {
@@ -101,7 +116,7 @@ figma.ui.onmessage = (msg: UiToCode) => {
 		return;
 	}
 	const parsed = parseToFigma(msg.data);
-	if (parsed) handle(parsed);
+	if (parsed) queue = queue.then(() => handle(parsed)).catch((err) => console.error("[FigmaDeck]", err));
 };
 
 let watchedPage: PageNode | undefined;

@@ -4,7 +4,7 @@ Control Figma from the Stream Deck+ dials and keys (macOS).
 
 | Action | Where | What it does |
 | --- | --- | --- |
-| **Property dial** | Dial | **Turn** to change opacity, layer blur, corner radius, stroke weight or auto-layout gap on the selection (spin fast for bigger steps). **Click** to cycle that property's mode (see below). **Hold, or hold and turn,** to open a property menu on the touch strip; turn to choose, release to pick. **Tap the strip** to reset. Turning blur or stroke up on a layer without one adds it; turning it to 0 removes it. The strip shows the live value and mode, and one turn is one undo step. |
+| **Property dial** | Dial | **Turn** to change opacity, blur, shadow, corner radius, stroke, auto-layout gap, padding, rotation, size or font size on the selection (spin fast for bigger steps). **Click** to cycle that property's mode (see below). **Hold, or hold and turn,** to open a property menu on the touch strip; turn to choose, release to pick. **Tap the strip** to reset. Turning blur, shadow or stroke up on a layer without one adds it; turning it to 0 removes it. The strip shows the live value and mode, and one turn is one undo step. |
 | **Focused field** | Dial | Nudges whichever number field has focus in Figma's properties panel (it sends ↑/↓, hold to send Shift+↑/↓ for ×10). Press to Tab to the next field, tap the strip to leave the field. Works on any field, without the Figma plugin, but can't show the value. |
 | **Figma shortcut** | Key | Fires a Figma shortcut: paste in place, paste to replace, copy/paste properties, frame selection, auto layout, group, component, run last plugin, and more. |
 
@@ -17,6 +17,13 @@ Control Figma from the Stream Deck+ dials and keys (macOS).
 | Radius | Corner smoothing: 0% → 60% (Figma's iOS preset) → 100% |
 | Stroke | Position: Inside → Outside → Center |
 | Gap | Auto layout direction: Row → Column → Wrap |
+| Shadow | Drop shadow ↔ Inner shadow (the dial sets the shadow's blur) |
+| Padding | Which sides: All → Horizontal → Vertical |
+| Rotation | 1° steps ↔ 15° snap (rotates around the centre, clockwise with the dial) |
+| Size | Width → Height → Both (keeps the aspect ratio) |
+| Font size | Text alignment: Left → Center → Right → Justify |
+
+Tapping the strip resets the value, except for Size and Font size, where there's no sensible default.
 
 ## How it fits together
 

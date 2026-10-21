@@ -15,13 +15,23 @@ export const COALESCE_MS = 20;
 /** How long the dial must be still before Figma commits an undo step, so one Cmd+Z undoes a whole turn. */
 export const UNDO_IDLE_MS = 400;
 
-export type PropertyId = "opacity" | "layerBlur" | "cornerRadius" | "strokeWeight" | "itemSpacing";
+export type PropertyId =
+	| "opacity"
+	| "layerBlur"
+	| "shadow"
+	| "cornerRadius"
+	| "strokeWeight"
+	| "itemSpacing"
+	| "padding"
+	| "rotation"
+	| "size"
+	| "fontSize";
 
 export interface PropertyInfo {
 	id: PropertyId;
 	/** Short label for the touch strip. */
 	label: string;
-	unit: "%" | "px";
+	unit: "%" | "px" | "°";
 	/** Change per tick. */
 	step: number;
 	/** Change per tick when the dial is turned fast or held down while turning. */
@@ -29,8 +39,8 @@ export interface PropertyInfo {
 	min: number;
 	/** Upper bound for the value, and for the touch strip bar. */
 	max: number;
-	/** Value a tap on the touch strip resets to. */
-	reset: number;
+	/** Value a tap on the touch strip resets to; none means tapping does nothing. */
+	reset?: number;
 }
 
 export const PROPERTIES: Record<PropertyId, PropertyInfo> = {
@@ -39,9 +49,25 @@ export const PROPERTIES: Record<PropertyId, PropertyInfo> = {
 	cornerRadius: { id: "cornerRadius", label: "Radius", unit: "px", step: 1, fastStep: 8, min: 0, max: 200, reset: 0 },
 	strokeWeight: { id: "strokeWeight", label: "Stroke", unit: "px", step: 1, fastStep: 4, min: 0, max: 100, reset: 1 },
 	itemSpacing: { id: "itemSpacing", label: "Gap", unit: "px", step: 1, fastStep: 8, min: 0, max: 400, reset: 0 },
+	shadow: { id: "shadow", label: "Shadow", unit: "px", step: 1, fastStep: 4, min: 0, max: 100, reset: 0 },
+	padding: { id: "padding", label: "Padding", unit: "px", step: 1, fastStep: 8, min: 0, max: 400, reset: 0 },
+	rotation: { id: "rotation", label: "Rotate", unit: "°", step: 1, fastStep: 15, min: -180, max: 180, reset: 0 },
+	size: { id: "size", label: "Size", unit: "px", step: 1, fastStep: 10, min: 1, max: 4000 },
+	fontSize: { id: "fontSize", label: "Font", unit: "px", step: 1, fastStep: 4, min: 1, max: 400 },
 };
 
-export const PROPERTY_ORDER: PropertyId[] = ["opacity", "layerBlur", "cornerRadius", "strokeWeight", "itemSpacing"];
+export const PROPERTY_ORDER: PropertyId[] = [
+	"opacity",
+	"layerBlur",
+	"shadow",
+	"cornerRadius",
+	"strokeWeight",
+	"itemSpacing",
+	"padding",
+	"rotation",
+	"size",
+	"fontSize",
+];
 
 export function isPropertyId(value: unknown): value is PropertyId {
 	return typeof value === "string" && value in PROPERTIES;
@@ -144,9 +170,16 @@ export function round2(value: number): number {
 /**
  * Applies dial ticks to a value. A "mixed" value snaps to `fallback` (the first selected layer's value) before stepping.
  */
-export function stepValue(current: PropertyValue, fallback: number, ticks: number, fast: boolean, info: PropertyInfo): number {
+export function stepValue(
+	current: PropertyValue,
+	fallback: number,
+	ticks: number,
+	fast: boolean,
+	info: PropertyInfo,
+	stepOverride?: number,
+): number {
 	const base = current === "mixed" ? fallback : current;
-	const step = fast ? info.fastStep : info.step;
+	const step = stepOverride ?? (fast ? info.fastStep : info.step);
 	return round2(clamp(base + ticks * step, info.min, info.max));
 }
 
@@ -182,13 +215,13 @@ export function backoffMs(attempt: number): number {
 export function formatValue(value: PropertyValue | undefined, info: PropertyInfo): string {
 	if (value === undefined) return "–";
 	if (value === "mixed") return "Mixed";
-	return `${round2(value)}${info.unit === "%" ? "%" : " px"}`;
+	return `${round2(value)}${info.unit === "px" ? " px" : info.unit}`;
 }
 
 /** Touch strip bar fill, 0–100. */
 export function indicatorPercent(value: PropertyValue | undefined, info: PropertyInfo): number {
 	if (typeof value !== "number") return 0;
-	return Math.round((clamp(value, info.min, info.max) / info.max) * 100);
+	return Math.round(((clamp(value, info.min, info.max) - info.min) / (info.max - info.min)) * 100);
 }
 
 /**
