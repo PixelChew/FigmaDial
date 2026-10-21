@@ -4,10 +4,17 @@
 	"api": "1.0.0",
 	"main": "dist/code.js",
 	"ui": "dist/ui.html",
-	"editorType": ["figma"],
+	"editorType": [
+		"figma"
+	],
 	"documentAccess": "dynamic-page",
 	"networkAccess": {
-		"allowedDomains": ["none"],
-		"devAllowedDomains": ["ws://localhost:8787"]
+		"allowedDomains": [
+			"ws://localhost:8787"
+		],
+		"reasoning": "Talks to the FigmaDeck Stream Deck plugin running on this computer.",
+		"devAllowedDomains": [
+			"ws://localhost:8787"
+		]
 	}
 }
