@@ -1,0 +1,32 @@
+{
+	"$schema": "https://schemas.elgato.com/streamdeck/plugins/layout.json",
+	"id": "com.pixelchew.figmadeck.value",
+	"items": [
+		{
+			"key": "title",
+			"type": "text",
+			"rect": [12, 6, 176, 20],
+			"alignment": "left",
+			"font": { "size": 15, "weight": 500 },
+			"color": "#b3b3b3"
+		},
+		{
+			"key": "value",
+			"type": "text",
+			"rect": [12, 34, 176, 32],
+			"alignment": "left",
+			"font": { "size": 24, "weight": 600 },
+			"text-overflow": "fade"
+		},
+		{
+			"key": "indicator",
+			"type": "bar",
+			"rect": [12, 80, 176, 10],
+			"subtype": 0,
+			"border_w": 0,
+			"bar_bg_c": "#3a3a3a",
+			"bar_fill_c": "#ffffff",
+			"value": 0
+		}
+	]
+}

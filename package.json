@@ -1,0 +1,22 @@
+{
+	"name": "figmadeck",
+	"private": true,
+	"type": "module",
+	"workspaces": [
+		"protocol",
+		"streamdeck-plugin",
+		"figma-plugin"
+	],
+	"scripts": {
+		"build": "npm run build -w streamdeck-plugin && npm run build -w figma-plugin",
+		"test": "vitest --run",
+		"typecheck": "tsc -p protocol --noEmit && tsc -p streamdeck-plugin --noEmit && tsc -p figma-plugin --noEmit"
+	},
+	"devDependencies": {
+		"typescript": "^5.9.3",
+		"vitest": "^5.0.5"
+	},
+	"engines": {
+		"node": ">=20"
+	}
+}

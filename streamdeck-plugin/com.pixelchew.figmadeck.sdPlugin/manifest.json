@@ -1,0 +1,59 @@
+{
+	"Name": "FigmaDeck",
+	"Version": "0.1.0.0",
+	"Author": "PixelChew",
+	"Actions": [
+		{
+			"Name": "Property dial",
+			"UUID": "com.pixelchew.figmadeck.property",
+			"Icon": "imgs/actions/dial/icon",
+			"Tooltip": "Controls opacity, blur, radius, stroke or gap on the Figma selection, plus each one's mode. Needs the FigmaDeck plugin running in Figma.",
+			"PropertyInspectorPath": "ui/property-dial.html",
+			"Controllers": ["Encoder"],
+			"Encoder": {
+				"layout": "layouts/value.json",
+				"TriggerDescription": {
+					"Rotate": "Adjust value (spin fast for big steps)",
+					"Push": "Click: cycle mode. Hold and turn: pick effect",
+					"Touch": "Reset"
+				}
+			},
+			"States": [{ "Image": "imgs/actions/dial/key" }]
+		},
+		{
+			"Name": "Focused field",
+			"UUID": "com.pixelchew.figmadeck.field",
+			"Icon": "imgs/actions/dial/icon",
+			"Tooltip": "Nudges whichever number field has focus in Figma's properties panel.",
+			"Controllers": ["Encoder"],
+			"Encoder": {
+				"layout": "layouts/value.json",
+				"TriggerDescription": {
+					"Rotate": "Nudge focused field (hold for ×10)",
+					"Push": "Next field",
+					"Touch": "Leave field"
+				}
+			},
+			"States": [{ "Image": "imgs/actions/dial/key" }]
+		},
+		{
+			"Name": "Figma shortcut",
+			"UUID": "com.pixelchew.figmadeck.shortcut",
+			"Icon": "imgs/actions/dial/icon",
+			"Tooltip": "Fires a Figma shortcut such as paste in place.",
+			"PropertyInspectorPath": "ui/shortcut-key.html",
+			"Controllers": ["Keypad"],
+			"States": [{ "Image": "imgs/actions/dial/key", "TitleAlignment": "middle" }]
+		}
+	],
+	"Category": "FigmaDeck",
+	"CategoryIcon": "imgs/plugin/category-icon",
+	"CodePath": "bin/plugin.js",
+	"Description": "Control Figma from the Stream Deck+ dials.",
+	"Icon": "imgs/plugin/marketplace",
+	"SDKVersion": 3,
+	"Software": { "MinimumVersion": "7.1" },
+	"OS": [{ "Platform": "mac", "MinimumVersion": "12" }],
+	"Nodejs": { "Version": "24", "Debug": "enabled" },
+	"UUID": "com.pixelchew.figmadeck"
+}

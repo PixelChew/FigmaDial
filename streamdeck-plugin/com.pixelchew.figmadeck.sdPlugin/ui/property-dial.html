@@ -1,0 +1,271 @@
+<!doctype html>
+<html>
+	<head lang="en">
+		<title>Property dial settings</title>
+		<meta charset="utf-8" />
+		<script src="https://sdpi-components.dev/releases/v4/sdpi-components.js"></script>
+	</head>
+	<body>
+		<sdpi-item label="Start on">
+			<sdpi-select setting="current" default="opacity">
+				<optgroup label="Layer">
+					<option value="nudge">Nudge</option>
+					<option value="opacity">Opacity</option>
+					<option value="fillOpacity">Fill opacity</option>
+					<option value="rotation">Rotation</option>
+					<option value="size">Size</option>
+				</optgroup>
+				<optgroup label="Effects">
+					<option value="layerBlur">Blur</option>
+					<option value="shadow">Drop shadow</option>
+					<option value="innerShadow">Inner shadow</option>
+				</optgroup>
+				<optgroup label="Shape">
+					<option value="cornerRadius">Corner radius</option>
+					<option value="smoothing">Corner smoothing</option>
+					<option value="strokeWeight">Stroke</option>
+					<option value="dashes">Stroke dashes</option>
+				</optgroup>
+				<optgroup label="Auto layout">
+					<option value="itemSpacing">Gap</option>
+					<option value="padding">Padding</option>
+				</optgroup>
+				<optgroup label="Text">
+					<option value="fontSize">Font size</option>
+					<option value="lineHeight">Line height</option>
+					<option value="letterSpacing">Letter spacing</option>
+					<option value="paragraph">Paragraph spacing</option>
+				</optgroup>
+			</sdpi-select>
+		</sdpi-item>
+		<sdpi-item label="Auto-switch">
+			<sdpi-checkbox setting="auto" default="true" label="Jump to the best effect for the selection"></sdpi-checkbox>
+		</sdpi-item>
+		<details>
+			<summary>Auto-switch targets</summary>
+		<sdpi-item label="Text">
+			<sdpi-select setting="auto_text" default="fontSize">
+				<option value="">Don't switch</option>
+				<optgroup label="Layer">
+					<option value="nudge">Nudge</option>
+					<option value="opacity">Opacity</option>
+					<option value="fillOpacity">Fill opacity</option>
+					<option value="rotation">Rotation</option>
+					<option value="size">Size</option>
+				</optgroup>
+				<optgroup label="Effects">
+					<option value="layerBlur">Blur</option>
+					<option value="shadow">Drop shadow</option>
+					<option value="innerShadow">Inner shadow</option>
+				</optgroup>
+				<optgroup label="Shape">
+					<option value="cornerRadius">Corner radius</option>
+					<option value="smoothing">Corner smoothing</option>
+					<option value="strokeWeight">Stroke</option>
+					<option value="dashes">Stroke dashes</option>
+				</optgroup>
+				<optgroup label="Auto layout">
+					<option value="itemSpacing">Gap</option>
+					<option value="padding">Padding</option>
+				</optgroup>
+				<optgroup label="Text">
+					<option value="fontSize">Font size</option>
+					<option value="lineHeight">Line height</option>
+					<option value="letterSpacing">Letter spacing</option>
+					<option value="paragraph">Paragraph spacing</option>
+				</optgroup>
+			</sdpi-select>
+		</sdpi-item>
+		<sdpi-item label="Auto layout">
+			<sdpi-select setting="auto_autoLayout" default="itemSpacing">
+				<option value="">Don't switch</option>
+				<optgroup label="Layer">
+					<option value="nudge">Nudge</option>
+					<option value="opacity">Opacity</option>
+					<option value="fillOpacity">Fill opacity</option>
+					<option value="rotation">Rotation</option>
+					<option value="size">Size</option>
+				</optgroup>
+				<optgroup label="Effects">
+					<option value="layerBlur">Blur</option>
+					<option value="shadow">Drop shadow</option>
+					<option value="innerShadow">Inner shadow</option>
+				</optgroup>
+				<optgroup label="Shape">
+					<option value="cornerRadius">Corner radius</option>
+					<option value="smoothing">Corner smoothing</option>
+					<option value="strokeWeight">Stroke</option>
+					<option value="dashes">Stroke dashes</option>
+				</optgroup>
+				<optgroup label="Auto layout">
+					<option value="itemSpacing">Gap</option>
+					<option value="padding">Padding</option>
+				</optgroup>
+				<optgroup label="Text">
+					<option value="fontSize">Font size</option>
+					<option value="lineHeight">Line height</option>
+					<option value="letterSpacing">Letter spacing</option>
+					<option value="paragraph">Paragraph spacing</option>
+				</optgroup>
+			</sdpi-select>
+		</sdpi-item>
+		<sdpi-item label="Frame">
+			<sdpi-select setting="auto_frame" default="cornerRadius">
+				<option value="">Don't switch</option>
+				<optgroup label="Layer">
+					<option value="nudge">Nudge</option>
+					<option value="opacity">Opacity</option>
+					<option value="fillOpacity">Fill opacity</option>
+					<option value="rotation">Rotation</option>
+					<option value="size">Size</option>
+				</optgroup>
+				<optgroup label="Effects">
+					<option value="layerBlur">Blur</option>
+					<option value="shadow">Drop shadow</option>
+					<option value="innerShadow">Inner shadow</option>
+				</optgroup>
+				<optgroup label="Shape">
+					<option value="cornerRadius">Corner radius</option>
+					<option value="smoothing">Corner smoothing</option>
+					<option value="strokeWeight">Stroke</option>
+					<option value="dashes">Stroke dashes</option>
+				</optgroup>
+				<optgroup label="Auto layout">
+					<option value="itemSpacing">Gap</option>
+					<option value="padding">Padding</option>
+				</optgroup>
+				<optgroup label="Text">
+					<option value="fontSize">Font size</option>
+					<option value="lineHeight">Line height</option>
+					<option value="letterSpacing">Letter spacing</option>
+					<option value="paragraph">Paragraph spacing</option>
+				</optgroup>
+			</sdpi-select>
+		</sdpi-item>
+		<sdpi-item label="Shape">
+			<sdpi-select setting="auto_shape" default="cornerRadius">
+				<option value="">Don't switch</option>
+				<optgroup label="Layer">
+					<option value="nudge">Nudge</option>
+					<option value="opacity">Opacity</option>
+					<option value="fillOpacity">Fill opacity</option>
+					<option value="rotation">Rotation</option>
+					<option value="size">Size</option>
+				</optgroup>
+				<optgroup label="Effects">
+					<option value="layerBlur">Blur</option>
+					<option value="shadow">Drop shadow</option>
+					<option value="innerShadow">Inner shadow</option>
+				</optgroup>
+				<optgroup label="Shape">
+					<option value="cornerRadius">Corner radius</option>
+					<option value="smoothing">Corner smoothing</option>
+					<option value="strokeWeight">Stroke</option>
+					<option value="dashes">Stroke dashes</option>
+				</optgroup>
+				<optgroup label="Auto layout">
+					<option value="itemSpacing">Gap</option>
+					<option value="padding">Padding</option>
+				</optgroup>
+				<optgroup label="Text">
+					<option value="fontSize">Font size</option>
+					<option value="lineHeight">Line height</option>
+					<option value="letterSpacing">Letter spacing</option>
+					<option value="paragraph">Paragraph spacing</option>
+				</optgroup>
+			</sdpi-select>
+		</sdpi-item>
+		<sdpi-item label="Line / vector">
+			<sdpi-select setting="auto_line" default="strokeWeight">
+				<option value="">Don't switch</option>
+				<optgroup label="Layer">
+					<option value="nudge">Nudge</option>
+					<option value="opacity">Opacity</option>
+					<option value="fillOpacity">Fill opacity</option>
+					<option value="rotation">Rotation</option>
+					<option value="size">Size</option>
+				</optgroup>
+				<optgroup label="Effects">
+					<option value="layerBlur">Blur</option>
+					<option value="shadow">Drop shadow</option>
+					<option value="innerShadow">Inner shadow</option>
+				</optgroup>
+				<optgroup label="Shape">
+					<option value="cornerRadius">Corner radius</option>
+					<option value="smoothing">Corner smoothing</option>
+					<option value="strokeWeight">Stroke</option>
+					<option value="dashes">Stroke dashes</option>
+				</optgroup>
+				<optgroup label="Auto layout">
+					<option value="itemSpacing">Gap</option>
+					<option value="padding">Padding</option>
+				</optgroup>
+				<optgroup label="Text">
+					<option value="fontSize">Font size</option>
+					<option value="lineHeight">Line height</option>
+					<option value="letterSpacing">Letter spacing</option>
+					<option value="paragraph">Paragraph spacing</option>
+				</optgroup>
+			</sdpi-select>
+		</sdpi-item>
+		<sdpi-item label="Group">
+			<sdpi-select setting="auto_group" default="opacity">
+				<option value="">Don't switch</option>
+				<optgroup label="Layer">
+					<option value="nudge">Nudge</option>
+					<option value="opacity">Opacity</option>
+					<option value="fillOpacity">Fill opacity</option>
+					<option value="rotation">Rotation</option>
+					<option value="size">Size</option>
+				</optgroup>
+				<optgroup label="Effects">
+					<option value="layerBlur">Blur</option>
+					<option value="shadow">Drop shadow</option>
+					<option value="innerShadow">Inner shadow</option>
+				</optgroup>
+				<optgroup label="Shape">
+					<option value="cornerRadius">Corner radius</option>
+					<option value="smoothing">Corner smoothing</option>
+					<option value="strokeWeight">Stroke</option>
+					<option value="dashes">Stroke dashes</option>
+				</optgroup>
+				<optgroup label="Auto layout">
+					<option value="itemSpacing">Gap</option>
+					<option value="padding">Padding</option>
+				</optgroup>
+				<optgroup label="Text">
+					<option value="fontSize">Font size</option>
+					<option value="lineHeight">Line height</option>
+					<option value="letterSpacing">Letter spacing</option>
+					<option value="paragraph">Paragraph spacing</option>
+				</optgroup>
+			</sdpi-select>
+		</sdpi-item>
+		</details>
+		<sdpi-item label="Quick select">
+			<sdpi-checkbox-list setting="menu" columns="2">
+				<option value="opacity">Opacity</option>
+				<option value="fillOpacity">Fill opacity</option>
+				<option value="rotation">Rotation</option>
+				<option value="size">Size</option>
+				<option value="layerBlur">Blur</option>
+				<option value="shadow">Drop shadow</option>
+				<option value="innerShadow">Inner shadow</option>
+				<option value="cornerRadius">Radius</option>
+				<option value="smoothing">Smoothing</option>
+				<option value="strokeWeight">Stroke</option>
+				<option value="dashes">Dashes</option>
+				<option value="itemSpacing">Gap</option>
+				<option value="padding">Padding</option>
+				<option value="fontSize">Font size</option>
+				<option value="lineHeight">Line height</option>
+				<option value="letterSpacing">Letter spacing</option>
+				<option value="paragraph">Paragraph</option>
+				<option value="nudge">Nudge</option>
+			</sdpi-checkbox-list>
+		</sdpi-item>
+		<sdpi-item>
+			<p>Hold the dial and turn to scroll the ticked effects; release to pick. Nothing ticked gives the default ten.</p>
+		</sdpi-item>
+	</body>
+</html>
